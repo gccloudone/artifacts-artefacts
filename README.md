@@ -44,5 +44,5 @@ We appreciate and welcome your inputs and suggestions to continuously improve th
 ## Resources
 
 * [Chainguard](https://chainguard.dev/)
-* [jFrog Devops Platform(https://jfrog.com/)
+* [jFrog Devops Platform](https://jfrog.com/)
 * [jFrog Academy](https://academy.jfrog.com/)
