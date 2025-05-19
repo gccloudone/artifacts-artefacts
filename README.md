@@ -4,6 +4,12 @@ Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secur
 
 For access to GC Secure Artifacts, please proceed by completing the [Secure Artifact Management Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmapffzfp00v9xb017pnmyb94).
 
+## Background
+
+For further insight into the GC Secure Artifacts initiative, below is an presentation (unclassified) previously presented at the Architectural Review Committee at SSC.
+
+- [GC Secure Artifacts Presentation](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/gc-secure-artifacts.pptx)
+
 ## Features
 
 GC Secure Artifacts provides:
@@ -37,4 +43,6 @@ We appreciate and welcome your inputs and suggestions to continuously improve th
 
 ## Resources
 
+* [Chainguard](https://chainguard.dev/)
+* [jFrog Devops Platform(https://jfrog.com/)
 * [jFrog Academy](https://academy.jfrog.com/)
