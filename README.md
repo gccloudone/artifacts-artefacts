@@ -33,7 +33,7 @@ For more detailed information on our project standards and guidelines, kindly re
 
 ## Feedback and Contributions
 
-We appreciate and welcome your inputs and suggestions to ensure this service continuously improves to support departmental and / or agency needs.
+We appreciate and welcome your inputs and suggestions to continuously improve this service to support departmental and/or agency needs. Feel free to share your feedback by emailing us at [devops.artifacts-artefacts.devops@ssc-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca).
 
 ## Resources
 
