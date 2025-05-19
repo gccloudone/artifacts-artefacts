@@ -1,37 +1,38 @@
-[(Français)](#le-nom-du-projet)
+# GC Secure Artifact Management
 
-## Name of the project
+Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secure Artifacts](https://artifacts-artefacts.devops.cloud-nuage.canada.ca), a secure, scalable, centralized artifact management service underpinned by the JFrog Enterprise+ platform, self-hosted on the GC Private Cloud. Available to all federal departments, this service represents SSC's initial venture into a unified DevSecOps service, designed to bolster software supply chain security and expedite delivery across the Government of Canada. Outcomes of this pioneering initiative will contribute to the decision-making process regarding the project's long-term sustainability and potential expansion.
 
-- What is this project?
-- How does it work?
-- Who will use this project?
-- What is the goal of this project?
+## Features
 
-### How to Contribute
+GC Secure Artifacts provides:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+* **Artifactory**: A reliable, multi-tenant repository for managing all software components, including open-source, proprietary, and custom-built.
 
-### License
+* **Xray**: Performs real-time scanning for vulnerabilities and license compliance, ensuring that only safe and approved code is deployed to production.
 
-Unless otherwise noted, the source code of this project is covered under Crown Copyright, Government of Canada, and is distributed under the [MIT License](LICENSE).
+GC Secure Artifacts, by consolidating efforts across departments, aims to:
 
-The Canada wordmark and related graphics associated with this distribution are protected under trademark law and copyright law. No permission is granted to use them outside the parameters of the Government of Canada's corporate identity program. For more information, see [Federal identity requirements](https://www.canada.ca/en/treasury-board-secretariat/topics/government-communications/federal-identity-requirements.html).
+1. **Reduce duplication**: Eliminate the need for each department to purchase and manage its own tools.
 
-______________________
+2. **Strengthen national security**: Through standardizing controls and policies involving software supply chains.
 
-## Le nom du projet
+3. **Accelerate development**: Enables developer teams to reuse trusted components without waiting for manual security approvals.
 
-- Quel est ce projet?
-- Comment ça marche?
-- Qui utilisera ce projet?
-- Quel est le but de ce projet?
+4. **Support compliance**: Maintains traceability throughout the Software Development Life Cycle (SDLC) to meet audit and policy demands.
 
-### Comment contribuer
+> This service aligns with the Government of Canada's initiative on reducing duplication. Currently, many departments have each procured independently an Artifactory instance. However, centralizing procurement could provide us access to advanced features such as JFrog Advanced Security and/or Runtime. By offering a single secure, scalable service for all departments, we can consolidate independently procured instances. This would lead to significant annual savings for the Government of Canada while enhancing cybersecurity and delivery speed.
 
-Voir [CONTRIBUTING.md](CONTRIBUTING.md)
+## Additional Documentation
 
-### Licence
+For more detailed information on our project standards and guidelines, kindly refer to the following documents:
 
-Sauf indication contraire, le code source de ce projet est protégé par le droit d'auteur de la Couronne du gouvernement du Canada et distribué sous la [licence MIT](LICENSE).
+- [Artifactory Standards](./docs/artifactory-standards.md)
+- Additional documents will be uploaded soon
 
-Le mot-symbole « Canada » et les éléments graphiques connexes liés à cette distribution sont protégés en vertu des lois portant sur les marques de commerce et le droit d'auteur. Aucune autorisation n'est accordée pour leur utilisation à l'extérieur des paramètres du programme de coordination de l'image de marque du gouvernement du Canada. Pour obtenir davantage de renseignements à ce sujet, veuillez consulter les [Exigences pour l'image de marque](https://www.canada.ca/fr/secretariat-conseil-tresor/sujets/communications-gouvernementales/exigences-image-marque.html).
+## Feedback and Contributions
+
+We appreciate and welcome your inputs and suggestions to ensure this service continuously improves to support departmental and / or agency needs.
+
+## Resources
+
+* [jFrog Academy](https://academy.jfrog.com/)
