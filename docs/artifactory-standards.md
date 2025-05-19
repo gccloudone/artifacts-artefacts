@@ -1,6 +1,6 @@
 # Artifactory Standards
 
-Standards for the management of Artifactory.
+Standards for the management of the [GC Secure Artifacts](https://artifacts-artefacts.devops.cloud-nuage.canada.ca/) Artifactory instance.
 
 ## Background
 
