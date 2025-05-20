@@ -46,13 +46,13 @@ These images have been set up as a pull through from Chainguard's registry to ou
 
 The container images which are available:
 
-*	Python
-*	OpenJDK (JDK & JRE)
-*	PowerShell
-*	Node.js
-*	ASP.NET Runtime
-*	.NET Runtime
-*	.NET SDK
+* Python
+* OpenJDK (JDK & JRE)
+* PowerShell
+* Node.js
+* ASP.NET Runtime
+* .NET Runtime
+* .NET SDK
 
 ## Additional Documentation
 

@@ -10,13 +10,13 @@ Artifactory has been set up as a pull through from Chainguard's registry to our 
 
 The container images which are available:
 
-*	Python
-*	OpenJDK (JDK & JRE)
-*	PowerShell
-*	Node.js
-*	ASP.NET Runtime
-*	.NET Runtime
-*	.NET SDK
+* Python
+* OpenJDK (JDK & JRE)
+* PowerShell
+* Node.js
+* ASP.NET Runtime
+* .NET Runtime
+* .NET SDK
 
 ## Purpose
 
