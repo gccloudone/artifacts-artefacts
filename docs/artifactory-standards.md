@@ -102,4 +102,4 @@ This document outlines the policies and procedures of operating the centralized 
 
 ## Contact Us
 
-If you have any questions or feedback, feel free to reach out to us at [email](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca).
+If you have any questions or feedback, feel free to reach out to us at [devops.artifacts-artefacts.devops@ssc-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca).
