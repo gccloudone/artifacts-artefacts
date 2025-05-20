@@ -46,24 +46,25 @@ These images have been set up as a pull through from Chainguard's registry to ou
 
 The container images which are available:
 
-*	Python
-*	OpenJDK (JDK & JRE)
-*	PowerShell
-*	Node.js
-*	ASP.NET Runtime
-*	.NET Runtime
-*	.NET SDK
+* Python
+* OpenJDK (JDK & JRE)
+* PowerShell
+* Node.js
+* ASP.NET Runtime
+* .NET Runtime
+* .NET SDK
 
 ## Additional Documentation
 
 For more detailed information on our project standards and guidelines, kindly refer to the following documents:
 
 - [Artifactory Standards](./docs/artifactory-standards.md)
+- [Chainguard Images](./docs/chainguard-images.md)
 - Additional documents will be uploaded soon
 
 ## Feedback and Contributions
 
-We appreciate and welcome your inputs and suggestions to continuously improve this service to support departmental and/or agency needs. 
+We appreciate and welcome your inputs and suggestions to continuously improve this service to support departmental and/or agency needs.
 
 Feel free to share your feedback by emailing us at [devops.artifacts-artefacts.devops@ssc-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca).
 
