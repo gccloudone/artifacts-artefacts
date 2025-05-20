@@ -1,10 +1,14 @@
 # GC Secure Artifacts
 
-Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secure Artifacts](https://artifacts-artefacts.devops.cloud-nuage.canada.ca), a secure, scalable, centralized artifact management service underpinned by the JFrog Enterprise+ platform, self-hosted on the GC Private Cloud. 
+Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secure Artifacts](https://artifacts-artefacts.devops.cloud-nuage.canada.ca), a secure, scalable, centralized artifact management service underpinned by the JFrog Enterprise+ platform, self-hosted on the GC Private Cloud.
+
+- https://artifacts-artefacts.devops.cloud-nuage.canada.ca
 
 Available to all federal departments and agencies, this service represents SSC's initial venture into a unified DevSecOps service, designed to bolster software supply chain security and expedite delivery across the Government of Canada. Outcomes of this pioneering initiative will contribute to the decision-making process regarding the project's long-term sustainability and potential expansion.
 
-For access to GC Secure Artifacts, please proceed by completing the [Secure Artifact Management Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmavw8p4l006eyi01cx1qtxxd).
+For access to GC Secure Artifacts, please completing the following GC Form:
+
+- [GC Secure Artifacts Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmavw8p4l006eyi01cx1qtxxd).
 
 ## Background
 
