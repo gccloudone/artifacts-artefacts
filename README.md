@@ -8,7 +8,7 @@ Available to all federal departments and agencies, this service represents SSC's
 
 For access to GC Secure Artifacts, please completing the following GC Form:
 
-- [GC Secure Artifacts Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmavw8p4l006eyi01cx1qtxxd).
+- [GC Secure Artifacts Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmavw8p4l006eyi01cx1qtxxd)
 
 ## Background
 
