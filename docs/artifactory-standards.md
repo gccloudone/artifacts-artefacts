@@ -99,7 +99,3 @@ This document outlines the policies and procedures of operating the centralized 
       - Operating System distributions (e.g., Debian, Ubuntu, RedHat Enterprise Linux)
       - Common Community Repositories (e.g., Maven, PyPI, Docker Hub, Quay.io, Helm)
       - Common repositories will follow a different naming convention than normal repositories, `[type]-[locator]`
-
-## Contact Us
-
-If you have any questions or feedback, feel free to reach out to us at [devops.artifacts-artefacts.devops@ssc-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca).
