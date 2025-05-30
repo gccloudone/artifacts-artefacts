@@ -30,6 +30,7 @@ jobs:
       uses: jfrog/setup-jfrog-cli@v4
       env:
         JF_URL: https://${{ env.REGISTRY }}
+        JF_USER: ${{ secrets.JFROG_USERNAME }}
         JF_ACCESS_TOKEN: ${{ secrets.JFROG_IDENTITY_TOKEN }}
 
     - name: Test JFrog connection
@@ -37,10 +38,9 @@ jobs:
         jf --version
         jf rt ping
 
-    - name: Configure Docker to use JFrog CLI credentials
+    - name: Configure Docker login
       run: |
-        jf config add --url=https://${{ env.REGISTRY }} --user=${{ secrets.JFROG_USERNAME }} --access-token=${{ secrets.JFROG_IDENTITY_TOKEN }}
-        jf docker login ${{ env.REGISTRY }}
+        echo ${{ secrets.JFROG_IDENTITY_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
 
     - name: Build Docker image
       run: |
