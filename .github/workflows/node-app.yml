@@ -30,8 +30,8 @@ jobs:
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
-        username: ${{ secrets.ARTIFACTORY_USERNAME }}
-        password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        username: ${{ secrets.JFROG_USERNAME }}
+        password: ${{ secrets.JFROG_IDENTITY_TOKEN }}
 
     - name: Extract metadata
       id: meta
