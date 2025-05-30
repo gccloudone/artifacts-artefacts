@@ -1,0 +1,54 @@
+{
+  "name": "GC-Critical-Security-Policy",
+  "description": "Government of Canada critical security policy for container images",
+  "type": "security",
+  "rules": [
+    {
+      "name": "Critical-CVE-Block",
+      "priority": 1,
+      "criteria": {
+        "min_severity": "Critical",
+        "fix_version_dependant": false
+      },
+      "actions": {
+        "webhooks": [],
+        "mails": ["devops.artifacts-artefacts.devops@ssc-spc.gc.ca"],
+        "block_download": {
+          "unscanned": true,
+          "active": true
+        },
+        "block_release_bundle_distribution": false,
+        "fail_build": true,
+        "notify_watch_recipients": true,
+        "notify_deployer": true,
+        "create_ticket_enabled": false,
+        "build_failure_grace_period_in_days": 0
+      }
+    },
+    {
+      "name": "High-CVE-Warning",
+      "priority": 2,
+      "criteria": {
+        "min_severity": "High",
+        "fix_version_dependant": true
+      },
+      "actions": {
+        "webhooks": [],
+        "mails": ["devops.artifacts-artefacts.devops@ssc-spc.gc.ca"],
+        "block_download": {
+          "unscanned": false,
+          "active": false
+        },
+        "block_release_bundle_distribution": false,
+        "fail_build": false,
+        "notify_watch_recipients": true,
+        "notify_deployer": true,
+        "create_ticket_enabled": true,
+        "build_failure_grace_period_in_days": 7
+      }
+    }
+  ],
+  "project_integrations": {
+    "integration_type": "global"
+  }
+}

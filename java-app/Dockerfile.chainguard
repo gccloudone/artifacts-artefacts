@@ -1,0 +1,24 @@
+# Multi-stage build with Chainguard images
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-24.0.1 AS builder
+
+WORKDIR /app
+
+# Copy Maven files
+COPY pom.xml .
+COPY src ./src
+
+# Build application (JDK image includes Maven)
+RUN mvn clean package -DskipTests
+
+# Runtime stage
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-24.0.1
+
+WORKDIR /app
+
+# Copy built artifact from builder stage
+COPY --from=builder /app/target/secure-artifacts-demo-1.0.0.jar app.jar
+
+# Chainguard images already run as non-root
+EXPOSE 8080
+
+CMD ["java", "-jar", "app.jar"]

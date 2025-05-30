@@ -1,0 +1,69 @@
+{
+  "name": "GC-License-Compliance-Policy",
+  "description": "Government of Canada license compliance policy",
+  "type": "license",
+  "rules": [
+    {
+      "name": "Copyleft-License-Block",
+      "priority": 1,
+      "criteria": {
+        "allowed_licenses": [
+          "MIT",
+          "Apache-2.0",
+          "BSD-2-Clause",
+          "BSD-3-Clause",
+          "ISC",
+          "MPL-2.0"
+        ],
+        "allow_unknown": false,
+        "multi_license_permissive": true
+      },
+      "actions": {
+        "webhooks": [],
+        "mails": ["devops.artifacts-artefacts.devops@ssc-spc.gc.ca"],
+        "block_download": {
+          "unscanned": false,
+          "active": true
+        },
+        "block_release_bundle_distribution": true,
+        "fail_build": true,
+        "notify_watch_recipients": true,
+        "notify_deployer": true,
+        "create_ticket_enabled": true,
+        "custom_severity": "High"
+      }
+    },
+    {
+      "name": "GPL-License-Warning",
+      "priority": 2,
+      "criteria": {
+        "banned_licenses": [
+          "GPL-2.0",
+          "GPL-3.0",
+          "LGPL-2.1",
+          "LGPL-3.0",
+          "AGPL-3.0"
+        ],
+        "allow_unknown": false,
+        "multi_license_permissive": false
+      },
+      "actions": {
+        "webhooks": [],
+        "mails": ["devops.artifacts-artefacts.devops@ssc-spc.gc.ca"],
+        "block_download": {
+          "unscanned": false,
+          "active": false
+        },
+        "block_release_bundle_distribution": false,
+        "fail_build": false,
+        "notify_watch_recipients": true,
+        "notify_deployer": true,
+        "create_ticket_enabled": true,
+        "custom_severity": "Medium"
+      }
+    }
+  ],
+  "project_integrations": {
+    "integration_type": "global"
+  }
+}
