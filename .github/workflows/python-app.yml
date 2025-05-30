@@ -32,9 +32,15 @@ jobs:
         JF_URL: https://${{ env.REGISTRY }}
         JF_ACCESS_TOKEN: ${{ secrets.JFROG_IDENTITY_TOKEN }}
 
+    - name: Test JFrog connection
+      run: |
+        jf --version
+        jf rt ping
+
     - name: Configure Docker to use JFrog CLI credentials
       run: |
-        jf docker login
+        jf config add --url=https://${{ env.REGISTRY }} --access-token=${{ secrets.JFROG_IDENTITY_TOKEN }}
+        jf docker login ${{ env.REGISTRY }}
 
     - name: Build Docker image
       run: |
