@@ -3,10 +3,10 @@ name: Python App - Security Comparison
 on:
   push:
     branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
-    paths: [ 'python-app/**' ]
+    # paths: [ 'python-app/**' ]
   pull_request:
     branches: [ main ]
-    paths: [ 'python-app/**' ]
+    # paths: [ 'python-app/**' ]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -26,33 +26,23 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to JFrog Artifactory
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ secrets.JFROG_USERNAME }}
-        password: ${{ secrets.JFROG_IDENTITY_TOKEN }}
+    - name: Set up JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        JF_URL: https://${{ env.REGISTRY }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_IDENTITY_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch,suffix=-${{ matrix.dockerfile }}
-          type=ref,event=pr,suffix=-${{ matrix.dockerfile }}
-          type=sha,suffix=-${{ matrix.dockerfile }}
+    - name: Build Docker image
+      run: |
+        docker build -f ./python-app/Dockerfile.${{ matrix.dockerfile }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} ./python-app
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./python-app
-        file: ./python-app/Dockerfile.${{ matrix.dockerfile }}
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+    - name: Push Docker image using JFrog CLI
+      run: |
+        jf docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} --build-name=python-${{ matrix.dockerfile }} --build-number=${{ github.run_number }}
+
+    - name: Publish build info to Artifactory
+      run: |
+        jf rt build-publish python-${{ matrix.dockerfile }} ${{ github.run_number }}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
