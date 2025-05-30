@@ -74,4 +74,3 @@ jobs:
         echo "Check the Security tab for detailed vulnerability comparison between:" >> $GITHUB_STEP_SUMMARY
         echo "- Standard Image: node:20-slim" >> $GITHUB_STEP_SUMMARY
         echo "- Chainguard Image: cgr.dev/ssc-spc.gc.ca/node:24.1.0" >> $GITHUB_STEP_SUMMARY
-        echo "Expected result: Chainguard image should show significantly fewer vulnerabilities." >> $GITHUB_STEP_SUMMARY

@@ -35,7 +35,7 @@ jobs:
     - name: Configure Docker to use JFrog CLI credentials
       run: |
         jf docker login
-        
+
     - name: Build Docker image
       run: |
         docker build -f ./java-app/Dockerfile.${{ matrix.dockerfile }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} ./java-app
@@ -74,4 +74,3 @@ jobs:
         echo "Check the Security tab for detailed vulnerability comparison between:" >> $GITHUB_STEP_SUMMARY
         echo "- Standard Image: openjdk:21-jdk-slim" >> $GITHUB_STEP_SUMMARY
         echo "- Chainguard Images: cgr.dev/ssc-spc.gc.ca/jdk & jre" >> $GITHUB_STEP_SUMMARY
-        echo "Expected result: Chainguard image should show significantly fewer vulnerabilities." >> $GITHUB_STEP_SUMMARY
