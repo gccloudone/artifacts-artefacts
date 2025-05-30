@@ -32,6 +32,10 @@ jobs:
         JF_URL: https://${{ env.REGISTRY }}
         JF_ACCESS_TOKEN: ${{ secrets.JFROG_IDENTITY_TOKEN }}
 
+    - name: Configure Docker to use JFrog CLI credentials
+      run: |
+        jf docker login
+
     - name: Build Docker image
       run: |
         docker build -f ./node-app/Dockerfile.${{ matrix.dockerfile }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} ./node-app
