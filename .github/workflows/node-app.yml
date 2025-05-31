@@ -3,10 +3,10 @@ name: Node.js App - Security Comparison
 on:
   push:
     branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
-    # paths: [ 'node-app/**' ]
+    paths: [ 'node-app/**' ]
   pull_request:
     branches: [ main ]
-    # paths: [ 'node-app/**' ]
+    paths: [ 'node-app/**' ]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca

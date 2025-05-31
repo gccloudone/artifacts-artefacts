@@ -3,10 +3,10 @@ name: Python App - Security Comparison
 on:
   push:
     branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
-    # paths: [ 'python-app/**' ]
+    paths: [ 'python-app/**' ]
   pull_request:
     branches: [ main ]
-    # paths: [ 'python-app/**' ]
+    paths: [ 'python-app/**' ]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
