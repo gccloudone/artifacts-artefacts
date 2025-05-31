@@ -15,6 +15,10 @@ env:
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     strategy:
       matrix:
         dockerfile: [standard, chainguard]
@@ -61,11 +65,19 @@ jobs:
         format: 'sarif'
         output: 'trivy-results-${{ matrix.dockerfile }}.sarif'
 
-    - name: Upload Trivy scan results
+    - name: Upload Trivy scan results to Security tab
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: 'trivy-results-${{ matrix.dockerfile }}.sarif'
         category: 'trivy-${{ matrix.dockerfile }}'
+      continue-on-error: true
+
+    - name: Upload Trivy results as artifact (fallback)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: trivy-results-${{ matrix.dockerfile }}
+        path: 'trivy-results-${{ matrix.dockerfile }}.sarif'
 
   security-comparison:
     needs: build-and-scan
