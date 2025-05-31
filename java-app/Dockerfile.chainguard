@@ -11,17 +11,14 @@ COPY .mvn .mvn
 # Copy Maven configuration
 COPY pom.xml .
 
-# Make Maven wrapper executable
-RUN chmod +x ./mvnw
-
 # Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline -B
+RUN sh mvnw dependency:go-offline -B
 
 # Copy source code
 COPY src ./src
 
 # Build application
-RUN ./mvnw clean package -DskipTests
+RUN sh mvnw clean package -DskipTests
 
 # Runtime stage
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-24.0.1
