@@ -31,7 +31,7 @@ jobs:
       env:
         JF_URL: https://${{ env.REGISTRY }}
         JF_USER: ${{ secrets.JFROG_USERNAME }}
-        JF_ACCESS_TOKEN: ${{ secrets.JFROG_IDENTITY_TOKEN }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
 
     - name: Test JFrog connection
       run: |
@@ -40,7 +40,7 @@ jobs:
 
     - name: Configure Docker login
       run: |
-        echo ${{ secrets.JFROG_IDENTITY_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
+        echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
     - name: Build Docker image
       run: |
