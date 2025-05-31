@@ -1,4 +1,5 @@
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/eclipse-temurin:21-jdk AS builder
+# Traditional approach (larger, more components)
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/openjdk:21-jdk AS builder
 
 WORKDIR /app
 
@@ -16,7 +17,7 @@ COPY src/main/java/com/example/*.java ./
 RUN javac *.java
 
 # Runtime stage
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/eclipse-temurin:21-jre
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/openjdk:21-jre
 
 WORKDIR /app
 
@@ -33,3 +34,5 @@ RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8080
+
+CMD ["java", "App"]
