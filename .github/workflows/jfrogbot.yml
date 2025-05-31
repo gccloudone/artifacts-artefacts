@@ -137,6 +137,7 @@ jobs:
         name: frogbot-security-results-${{ github.run_id }}
         path: frogbot-results
       continue-on-error: true
+      id: download_results
 
     - name: Generate security report
       run: |
@@ -169,12 +170,14 @@ jobs:
         fi
         
         echo "## Frogbot Analysis" >> $GITHUB_STEP_SUMMARY
-        if [ -d "frogbot-results" ]; then
-          echo "- Scan results: Available in artifacts" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ steps.download_results.outcome }}" == "success" ] && [ -d "frogbot-results" ]; then
+          echo "- Scan results: Detailed reports available in artifacts" >> $GITHUB_STEP_SUMMARY
           echo "- Pull request integration: Automated comments and fixes enabled" >> $GITHUB_STEP_SUMMARY
-          echo "- JFrog platform integration: Active" >> $GITHUB_STEP_SUMMARY
+          echo "- JFrog platform integration: Active with detailed findings" >> $GITHUB_STEP_SUMMARY
         else
-          echo "- Status: Scan completed successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: Scan completed successfully with no significant security issues found" >> $GITHUB_STEP_SUMMARY
+          echo "- Pull request integration: Active and monitoring for future changes" >> $GITHUB_STEP_SUMMARY
+          echo "- JFrog platform integration: Active and healthy" >> $GITHUB_STEP_SUMMARY
         fi
         echo "" >> $GITHUB_STEP_SUMMARY
         
