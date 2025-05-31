@@ -3,12 +3,25 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 
 WORKDIR /app
 
-# Copy Maven files
+# Copy Maven wrapper files first (for better layer caching)
+COPY mvnw .
+COPY mvnw.cmd .
+COPY .mvn .mvn
+
+# Copy Maven configuration
 COPY pom.xml .
+
+# Make Maven wrapper executable
+RUN chmod +x ./mvnw
+
+# Download dependencies (this layer will be cached if pom.xml doesn't change)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code
 COPY src ./src
 
-# Build application (JDK image includes Maven)
-RUN mvn clean package -DskipTests
+# Build application
+RUN ./mvnw clean package -DskipTests
 
 # Runtime stage
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-24.0.1
