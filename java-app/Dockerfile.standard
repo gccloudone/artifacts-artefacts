@@ -1,41 +1,16 @@
-# Traditional approach using Ubuntu base (larger, more components, more CVEs)
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/ubuntu:22.04 AS builder
+FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /app
 
-# Install OpenJDK and build tools
-RUN apt-get update && apt-get install -y \
-    openjdk-21-jdk \
-    maven \
-    curl \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy source code
 COPY src/main/java/com/example/*.java ./
 
-# Compile with javac 
 RUN javac *.java
 
-# Runtime stage
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/ubuntu:22.04
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-# Install Java runtime and additional tools (this adds more attack surface)
-RUN apt-get update && apt-get install -y \
-    openjdk-21-jre-headless \
-    curl \
-    wget \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy compiled classes
 COPY --from=builder /app/*.class ./
-
-# Create non-root user manually
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
 
 EXPOSE 8080
 

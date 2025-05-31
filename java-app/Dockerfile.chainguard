@@ -1,23 +1,17 @@
-# Chainguard-based build (secure, minimal)
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/ssc-spc.gc.ca/jdk:openjdk-24.0.1 AS builder
 
 WORKDIR /app
 
-# Copy source code directly
 COPY src/main/java/com/example/*.java ./
 
-# Compile with javac (no Maven needed for this simple demo)
 RUN javac *.java
 
-# Runtime stage with minimal Chainguard JRE
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/ssc-spc.gc.ca/jre:openjdk-24.0.1
 
 WORKDIR /app
 
-# Copy compiled classes
 COPY --from=builder /app/*.class ./
 
-# Chainguard images run as non-root by default (no need to create user)
 EXPOSE 8080
 
 CMD ["java", "App"]
