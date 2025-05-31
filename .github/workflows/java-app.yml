@@ -3,10 +3,10 @@ name: Java App - Security and Performance Pipeline
 on:
   push:
     branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
-    paths: [ 'java-app/**' ]
+    # paths: [ 'java-app/**' ]  # Commented out to run on all changes
   pull_request:
     branches: [ main ]
-    paths: [ 'java-app/**' ]
+    # paths: [ 'java-app/**' ]  # Commented out to run on all changes
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -67,7 +67,6 @@ jobs:
         docker buildx build \
           --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
           --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} \
-          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.dockerfile }} \
           --cache-from=type=gha,scope=${{ matrix.dockerfile }} \
           --cache-to=type=gha,mode=max,scope=${{ matrix.dockerfile }} \
           --metadata-file=image-metadata-${{ matrix.dockerfile }}.json \
@@ -84,10 +83,6 @@ jobs:
           --build-name=java-${{ matrix.dockerfile }} \
           --build-number=${{ github.run_number }}
         
-        jf docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.dockerfile }} \
-          --build-name=java-${{ matrix.dockerfile }} \
-          --build-number=${{ github.run_number }}
-        
         echo "Push completed for ${{ matrix.dockerfile }} image"
 
     - name: Sign container images
@@ -95,7 +90,6 @@ jobs:
         echo "Signing container images with Cosign"
         
         cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.dockerfile }}
         
         echo "Verifying signatures"
         cosign verify ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} \
@@ -239,8 +233,8 @@ jobs:
         echo "  --certificate-oidc-issuer=\"https://token.actions.githubusercontent.com\"" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "# Pull and inspect images" >> $GITHUB_STEP_SUMMARY
-        echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-chainguard" >> $GITHUB_STEP_SUMMARY
-        echo "docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-chainguard" >> $GITHUB_STEP_SUMMARY
+        echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-chainguard" >> $GITHUB_STEP_SUMMARY
+        echo "docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-chainguard" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "# Check build information in JFrog" >> $GITHUB_STEP_SUMMARY
         echo "jf rt build-info java-chainguard ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY

@@ -48,7 +48,7 @@ jobs:
           JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_GIT_BASE_BRANCH: ${{ matrix.branch }}
-          JF_FAIL_ON_SECURITY_ISSUES: "false"  # Don't fail build while troubleshooting
+          JF_FAIL_ON_SECURITY_ISSUES: "false"
           JF_MIN_SEVERITY: "medium"
           JF_FIXABLE_ONLY: "false"
           JF_DOCKER_SCAN_ADD_POLICY: "true"
@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload Frogbot results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('frogbot-output/**/*') != ''
         with:
           name: frogbot-security-results-${{ github.run_id }}
           path: |
