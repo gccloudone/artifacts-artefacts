@@ -1,26 +1,38 @@
-FROM openjdk:21-jdk-slim
+# Traditional approach (larger, more components)
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/openjdk:21-jdk-slim AS builder
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and Maven
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    maven \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy source code
+COPY src/main/java/com/example/*.java ./
+
+# Compile with javac 
+RUN javac *.java
+
+# Runtime stage
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/openjdk:21-jre-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Maven files
-COPY pom.xml .
-COPY src ./src
+# Copy compiled classes
+COPY --from=builder /app/*.class ./
 
-# Install Maven
-RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
-
-# Build application
-RUN mvn clean package -DskipTests
-
-# Create non-root user
+# Create non-root user manually
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "target/secure-artifacts-demo-1.0.0.jar"]
+CMD ["java", "App"]

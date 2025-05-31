@@ -1,34 +1,23 @@
-# Multi-stage build with Chainguard images
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-24.0.1 AS builder
+# Chainguard-based build (secure, minimal)
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/ssc-spc.gc.ca/jdk:openjdk-24.0.1 AS builder
 
 WORKDIR /app
 
-# Copy Maven wrapper files first (for better layer caching)
-COPY mvnw .
-COPY mvnw.cmd .
-COPY .mvn .mvn
+# Copy source code directly
+COPY src/main/java/com/example/*.java ./
 
-# Copy Maven configuration
-COPY pom.xml .
+# Compile with javac (no Maven needed for this simple demo)
+RUN javac *.java
 
-# Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN sh mvnw dependency:go-offline -B
-
-# Copy source code
-COPY src ./src
-
-# Build application
-RUN sh mvnw clean package -DskipTests
-
-# Runtime stage
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-24.0.1
+# Runtime stage with minimal Chainguard JRE
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/ssc-spc.gc.ca/jre:openjdk-24.0.1
 
 WORKDIR /app
 
-# Copy built artifact from builder stage
-COPY --from=builder /app/target/secure-artifacts-demo-1.0.0.jar app.jar
+# Copy compiled classes
+COPY --from=builder /app/*.class ./
 
-# Chainguard images already run as non-root
+# Chainguard images run as non-root by default (no need to create user)
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "App"]
