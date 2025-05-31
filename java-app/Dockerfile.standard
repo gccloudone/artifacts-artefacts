@@ -1,5 +1,5 @@
 # Traditional approach (larger, more components)
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/openjdk:21-jdk-slim AS builder
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/eclipse-temurin:21-jdk-jammy AS builder
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY src/main/java/com/example/*.java ./
 RUN javac *.java
 
 # Runtime stage
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/openjdk:21-jre-slim
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
