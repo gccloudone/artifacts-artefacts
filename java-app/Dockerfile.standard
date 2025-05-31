@@ -1,13 +1,14 @@
-# Traditional approach (larger, more components)
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/openjdk:21-jdk AS builder
+# Traditional approach using Ubuntu base (larger, more components, more CVEs)
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/ubuntu:22.04 AS builder
 
 WORKDIR /app
 
-# Install system dependencies and Maven
+# Install OpenJDK and build tools
 RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    maven \
     curl \
     wget \
-    maven \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy source code
@@ -17,13 +18,16 @@ COPY src/main/java/com/example/*.java ./
 RUN javac *.java
 
 # Runtime stage
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/openjdk:21-jre
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/ubuntu:22.04
 
 WORKDIR /app
 
-# Install runtime dependencies
+# Install Java runtime and additional tools (this adds more attack surface)
 RUN apt-get update && apt-get install -y \
+    openjdk-21-jre-headless \
     curl \
+    wget \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy compiled classes
