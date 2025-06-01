@@ -1,8 +1,8 @@
-name: Java App - Security and Performance Pipeline
+name: Simple Java Build and Security Scan
 
 on:
   push:
-    branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -11,162 +11,62 @@ env:
   IMAGE_NAME: ssc-aurora-docker-local/chainguard-demo/java-app
 
 jobs:
-  build-sign-and-scan:
+  build-and-scan:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
-      actions: read
-      id-token: write
+      pull-requests: write
     strategy:
       matrix:
         dockerfile: [standard, chainguard]
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 1
 
-    - name: Install Cosign
-      uses: sigstore/cosign-installer@v3
-      with:
-        cosign-release: 'v2.2.2'
-
-    - name: Set up JFrog CLI
+    - name: Setup JFrog CLI
       uses: jfrog/setup-jfrog-cli@v4
       env:
         JF_URL: https://${{ env.REGISTRY }}
         JF_USER: ${{ secrets.JFROG_USERNAME }}
         JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
 
-    - name: Configure JFrog and Docker authentication
+    - name: Docker login
       run: |
-        jf --version
-        jf rt ping
         echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} \
           --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
-    - name: Pre-pull Chainguard base images (Workaround for BuildKit)
-      if: ${{ matrix.dockerfile == 'chainguard' }}
-      run: |
-        docker pull ${{ env.REGISTRY }}/docker/ssc-spc.gc.ca/jdk:openjdk-24.0.1
-        docker pull ${{ env.REGISTRY }}/docker/ssc-spc.gc.ca/jre:openjdk-24.0.1
-
-    - name: Set up Docker Buildx (Standard only)
-      if: ${{ matrix.dockerfile == 'standard' }}
-      uses: docker/setup-buildx-action@v3
-      with:
-        driver-opts: |
-          image=moby/buildkit:master
-          network=host
-
-    - name: Build Docker image
+    - name: Build image
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+        docker build -f java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG java-app
 
-        if [ "${{ matrix.dockerfile }}" = "chainguard" ]; then
-          export DOCKER_BUILDKIT=0
-          docker build \
-            -f java-app/Dockerfile.chainguard \
-            -t $IMAGE_TAG \
-            java-app
-        else
-          docker buildx build \
-            --file java-app/Dockerfile.standard \
-            --tag $IMAGE_TAG \
-            --cache-from=type=gha,scope=standard \
-            --cache-to=type=gha,mode=max,scope=standard \
-            --metadata-file=image-metadata-standard.json \
-            --load \
-            java-app
-        fi
-
-    - name: Push image to JFrog Artifactory
+    - name: Push image
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        jf docker push $IMAGE_TAG \
-          --build-name=java-${{ matrix.dockerfile }} \
-          --build-number=${{ github.run_number }}
+        docker push $IMAGE_TAG
 
-    - name: Sign container image with Cosign
+    - name: Scan with JFrog Xray
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        cosign sign --yes $IMAGE_TAG
-        cosign verify $IMAGE_TAG \
-          --certificate-identity-regexp="https://github.com/${{ github.repository }}" \
-          --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
-          || echo "Signature verification skipped"
+        jf docker scan $IMAGE_TAG
 
-    - name: Publish build metadata
-      run: |
-        jf rt build-add-git java-${{ matrix.dockerfile }} ${{ github.run_number }}
-        jf rt build-add-env java-${{ matrix.dockerfile }} ${{ github.run_number }}
-        jf rt build-publish java-${{ matrix.dockerfile }} ${{ github.run_number }}
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        format: 'sarif'
-        output: 'trivy-results-${{ matrix.dockerfile }}.sarif'
-        severity: 'CRITICAL,HIGH,MEDIUM'
-        vuln-type: 'os,library'
-
-    - name: Run detailed Trivy analysis
-      run: |
-        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-          -v $(pwd):/workspace aquasec/trivy:latest image \
-          --format json \
-          --output /workspace/trivy-detailed-${{ matrix.dockerfile }}.json \
-          $IMAGE_TAG
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-          -v $(pwd):/workspace aquasec/trivy:latest image \
-          --format table \
-          --output /workspace/trivy-summary-${{ matrix.dockerfile }}.txt \
-          $IMAGE_TAG
-
-    - name: Upload SARIF to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: trivy-results-${{ matrix.dockerfile }}.sarif
-        category: trivy-${{ matrix.dockerfile }}
-      continue-on-error: true
-
-    - name: Archive scan results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: security-analysis-${{ matrix.dockerfile }}-${{ github.run_number }}
-        path: |
-          trivy-results-${{ matrix.dockerfile }}.sarif
-          trivy-detailed-${{ matrix.dockerfile }}.json
-          trivy-summary-${{ matrix.dockerfile }}.txt
-          image-metadata-${{ matrix.dockerfile }}.json
-        retention-days: 30
-
-  security-report:
-    needs: build-sign-and-scan
+  frogbot:
     runs-on: ubuntu-latest
-    if: always()
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
 
     steps:
-    - name: Download scan results
-      uses: actions/download-artifact@v4
-      with:
-        path: scan-results
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Generate GitHub summary report
-      run: |
-        echo "# Java App Security Summary" >> $GITHUB_STEP_SUMMARY
-        echo "- Build \`${{ github.sha }}\` #${{ github.run_number }} triggered by \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "| Type | Base | Signed | Scanned |" >> $GITHUB_STEP_SUMMARY
-        echo "|------|------|--------|---------|" >> $GITHUB_STEP_SUMMARY
-        echo "| Standard | openjdk | Yes | Yes |" >> $GITHUB_STEP_SUMMARY
-        echo "| Chainguard | jdk | Yes | Yes |" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## Review" >> $GITHUB_STEP_SUMMARY
-        echo "- Check 'Security' tab for vulnerability breakdown" >> $GITHUB_STEP_SUMMARY
-        echo "- Compare Chainguard vs Standard image posture" >> $GITHUB_STEP_SUMMARY
-        echo "- Download artifacts for full details" >> $GITHUB_STEP_SUMMARY
+    - name: Run Frogbot
+      uses: jfrog/frogbot@v2
+      env:
+        JF_URL: https://${{ env.REGISTRY }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+        JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
