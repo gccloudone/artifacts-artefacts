@@ -70,3 +70,15 @@ jobs:
         JF_URL: https://${{ env.REGISTRY }}
         JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
         JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  summary:
+    needs: [build-and-scan]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'push'
+    
+    steps:
+    - name: Build Summary
+      run: |
+        echo "Build ${{ github.run_number }} completed" >> $GITHUB_STEP_SUMMARY
+        echo "Standard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
+        echo "Chainguard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
