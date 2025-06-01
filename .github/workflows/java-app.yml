@@ -11,7 +11,6 @@ on:
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
   IMAGE_NAME: ssc-aurora-docker-local/chainguard-demo/java-app
-  DOCKER_BUILDKIT: 1
 
 jobs:
   build-sign-and-scan:
@@ -24,19 +23,12 @@ jobs:
     strategy:
       matrix:
         dockerfile: [standard, chainguard]
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-      with:
-        driver-opts: |
-          image=moby/buildkit:master
-          network=host
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3
@@ -55,59 +47,66 @@ jobs:
         echo "Testing JFrog connectivity"
         jf --version
         jf rt ping
-        
-        echo "Configuring Docker authentication"
+
+        echo "Authenticating Docker to Artifactory"
         echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} \
           --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
+    - name: Set up Docker Buildx (Chainguard only)
+      if: ${{ matrix.dockerfile == 'chainguard' }}
+      uses: docker/setup-buildx-action@v3
+      with:
+        driver-opts: |
+          image=moby/buildkit:master
+          network=host
+
     - name: Build Docker image
       run: |
-        echo "Building ${{ matrix.dockerfile }} image with cache optimization"
-        
-        docker buildx build \
-          --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
-          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} \
-          --cache-from=type=gha,scope=${{ matrix.dockerfile }} \
-          --cache-to=type=gha,mode=max,scope=${{ matrix.dockerfile }} \
-          --metadata-file=image-metadata-${{ matrix.dockerfile }}.json \
-          --load \
-          ./java-app
-        
-        echo "Build completed for ${{ matrix.dockerfile }} image"
+        echo "Building ${{ matrix.dockerfile }} image"
+
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+
+        if [ "${{ matrix.dockerfile }}" = "chainguard" ]; then
+          docker buildx build \
+            --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
+            --tag $IMAGE_TAG \
+            --cache-from=type=gha,scope=${{ matrix.dockerfile }} \
+            --cache-to=type=gha,mode=max,scope=${{ matrix.dockerfile }} \
+            --metadata-file=image-metadata-${{ matrix.dockerfile }}.json \
+            --load \
+            ./java-app
+        else
+          export DOCKER_BUILDKIT=0
+          docker build \
+            --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
+            --tag $IMAGE_TAG \
+            ./java-app
+        fi
 
     - name: Push image to JFrog Artifactory
       run: |
-        echo "Pushing ${{ matrix.dockerfile }} image to JFrog"
-        
-        jf docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} \
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+
+        jf docker push $IMAGE_TAG \
           --build-name=java-${{ matrix.dockerfile }} \
           --build-number=${{ github.run_number }}
-        
-        echo "Push completed for ${{ matrix.dockerfile }} image"
 
-    - name: Sign container images
+    - name: Sign container image with Cosign
       run: |
-        echo "Signing container images with Cosign"
-        
-        cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        
-        echo "Verifying signatures"
-        cosign verify ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} \
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+        cosign sign --yes $IMAGE_TAG
+
+        echo "Verifying signature"
+        cosign verify $IMAGE_TAG \
           --certificate-identity-regexp="https://github.com/${{ github.repository }}" \
           --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
           || echo "Signature verification skipped in this environment"
-        
-        echo "Container signing completed"
 
-    - name: Publish build information
+    - name: Publish build metadata
       run: |
-        echo "Publishing build information to Artifactory"
-        
         jf rt build-add-git java-${{ matrix.dockerfile }} ${{ github.run_number }}
         jf rt build-add-env java-${{ matrix.dockerfile }} ${{ github.run_number }}
         jf rt build-publish java-${{ matrix.dockerfile }} ${{ github.run_number }}
-        
-        echo "Build info published"
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -118,29 +117,27 @@ jobs:
         severity: 'CRITICAL,HIGH,MEDIUM'
         vuln-type: 'os,library'
 
-    - name: Run comprehensive Trivy analysis
+    - name: Run detailed Trivy analysis
       run: |
-        echo "Running detailed Trivy analysis"
-        
-        # Generate JSON report for detailed analysis
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+
         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
           -v $(pwd):/workspace aquasec/trivy:latest image \
           --format json \
           --output /workspace/trivy-detailed-${{ matrix.dockerfile }}.json \
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        
-        # Generate table format for human review
+          $IMAGE_TAG
+
         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
           -v $(pwd):/workspace aquasec/trivy:latest image \
           --format table \
           --output /workspace/trivy-summary-${{ matrix.dockerfile }}.txt \
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+          $IMAGE_TAG
 
-    - name: Upload scan results to GitHub Security
+    - name: Upload SARIF to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: 'trivy-results-${{ matrix.dockerfile }}.sarif'
-        category: 'trivy-${{ matrix.dockerfile }}'
+        sarif_file: trivy-results-${{ matrix.dockerfile }}.sarif
+        category: trivy-${{ matrix.dockerfile }}
       continue-on-error: true
 
     - name: Archive scan results
@@ -159,83 +156,24 @@ jobs:
     needs: build-sign-and-scan
     runs-on: ubuntu-latest
     if: always()
-    
+
     steps:
     - name: Download scan results
       uses: actions/download-artifact@v4
       with:
         path: scan-results
 
-    - name: Generate security analysis report
+    - name: Generate GitHub summary report
       run: |
-        echo "# Java Application Security Analysis" >> $GITHUB_STEP_SUMMARY
+        echo "# Java App Security Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- Build \`${{ github.sha }}\` #${{ github.run_number }} triggered by \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "| Type | Base | Signed | Scanned |" >> $GITHUB_STEP_SUMMARY
+        echo "|------|------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Standard | openjdk | ✔️ | ✔️ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Chainguard | jdk | ✔️ | ✔️ |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        
-        echo "## Build Information" >> $GITHUB_STEP_SUMMARY
-        echo "- Application: Java Spring Boot Application" >> $GITHUB_STEP_SUMMARY
-        echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- Build: #${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-        echo "- Triggered by: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "- Container signing: Enabled with Cosign" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        echo "## Container Images Built" >> $GITHUB_STEP_SUMMARY
-        echo "| Image Type | Base Image | Registry | Signed | Scanned |" >> $GITHUB_STEP_SUMMARY
-        echo "|------------|------------|----------|---------|---------|" >> $GITHUB_STEP_SUMMARY
-        echo "| Standard | openjdk:21-jdk-slim | ${{ env.REGISTRY }} | Yes | Yes |" >> $GITHUB_STEP_SUMMARY
-        echo "| Chainguard | cgr.dev/ssc-spc.gc.ca/jdk | ${{ env.REGISTRY }} | Yes | Yes |" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        echo "## Security Analysis" >> $GITHUB_STEP_SUMMARY
-        echo "### Vulnerability Scanning" >> $GITHUB_STEP_SUMMARY
-        echo "- Scanner: Trivy for OS packages and application dependencies" >> $GITHUB_STEP_SUMMARY
-        echo "- Severity levels: Critical, High, Medium vulnerabilities included" >> $GITHUB_STEP_SUMMARY
-        echo "- Coverage: Base image and application layers" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        echo "### Compliance and Traceability" >> $GITHUB_STEP_SUMMARY
-        echo "- Build metadata: Full Git context stored in Artifactory" >> $GITHUB_STEP_SUMMARY
-        echo "- Supply chain security: Images signed with Cosign" >> $GITHUB_STEP_SUMMARY
-        echo "- Artifact retention: Scan results preserved for 30 days" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        if [ -d "scan-results" ]; then
-          echo "## Available Reports" >> $GITHUB_STEP_SUMMARY
-          for result_dir in scan-results/*/; do
-            if [ -d "$result_dir" ]; then
-              artifact_name=$(basename "$result_dir")
-              echo "- $artifact_name: Detailed analysis and summary reports" >> $GITHUB_STEP_SUMMARY
-            fi
-          done
-          echo "" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
-        echo "### Security Review" >> $GITHUB_STEP_SUMMARY
-        echo "Review the vulnerability reports in the Security tab to compare:" >> $GITHUB_STEP_SUMMARY
-        echo "- Chainguard vs Standard image security posture" >> $GITHUB_STEP_SUMMARY
-        echo "- Critical and high-severity vulnerabilities" >> $GITHUB_STEP_SUMMARY
-        echo "- Available remediation options and patches" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        echo "### Recommended Actions" >> $GITHUB_STEP_SUMMARY
-        echo "1. Review detailed vulnerability reports in Security tab" >> $GITHUB_STEP_SUMMARY
-        echo "2. Download artifacts for comprehensive analysis files" >> $GITHUB_STEP_SUMMARY
-        echo "3. Verify container signatures for authenticity" >> $GITHUB_STEP_SUMMARY
-        echo "4. Monitor JFrog Xray for ongoing vulnerability alerts" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        echo "## Verification Commands" >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-        echo "# Verify container signatures" >> $GITHUB_STEP_SUMMARY
-        echo "cosign verify ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-standard \\" >> $GITHUB_STEP_SUMMARY
-        echo "  --certificate-identity-regexp=\"https://github.com/${{ github.repository }}\" \\" >> $GITHUB_STEP_SUMMARY
-        echo "  --certificate-oidc-issuer=\"https://token.actions.githubusercontent.com\"" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "# Pull and inspect images" >> $GITHUB_STEP_SUMMARY
-        echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-chainguard" >> $GITHUB_STEP_SUMMARY
-        echo "docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-chainguard" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "# Check build information in JFrog" >> $GITHUB_STEP_SUMMARY
-        echo "jf rt build-info java-chainguard ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+        echo "## Review" >> $GITHUB_STEP_SUMMARY
+        echo "- Check 'Security' tab for vulnerability breakdown" >> $GITHUB_STEP_SUMMARY
+        echo "- Compare Chainguard vs Standard image posture" >> $GITHUB_STEP_SUMMARY
+        echo "- Download artifacts for full details" >> $GITHUB_STEP_SUMMARY
