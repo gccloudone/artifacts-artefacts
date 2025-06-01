@@ -95,12 +95,14 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "Standard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
         if [ -f scan-results-standard.txt ]; then
-          echo "Standard scan result:" >> $GITHUB_STEP_SUMMARY
-          tail -5 scan-results-standard.txt >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          grep -E "(No vulnerable|vulnerabilities found|Scan completed)" scan-results-standard.txt | tail -2 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         fi
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "Chainguard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
         if [ -f scan-results-chainguard.txt ]; then
-          echo "Chainguard scan result:" >> $GITHUB_STEP_SUMMARY
-          tail -5 scan-results-chainguard.txt >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          grep -E "(No vulnerable|vulnerabilities found|Scan completed)" scan-results-chainguard.txt | tail -2 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         fi
