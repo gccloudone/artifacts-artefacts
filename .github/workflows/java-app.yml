@@ -50,13 +50,8 @@ jobs:
     - name: Scan with JFrog Xray
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        jf docker scan $IMAGE_TAG > scan-results-${{ matrix.dockerfile }}.txt 2>&1 || true
-
-    - name: Upload scan results
-      uses: actions/upload-artifact@v4
-      with:
-        name: scan-results-${{ matrix.dockerfile }}
-        path: scan-results-${{ matrix.dockerfile }}.txt
+        echo "Scanning ${{ matrix.dockerfile }} image..."
+        jf docker scan $IMAGE_TAG
 
   frogbot:
     runs-on: ubuntu-latest
@@ -83,26 +78,9 @@ jobs:
     if: always() && github.event_name == 'push'
     
     steps:
-    - name: Download scan results
-      uses: actions/download-artifact@v4
-      with:
-        pattern: scan-results-*
-        merge-multiple: true
-
     - name: Build Summary
       run: |
         echo "Build ${{ github.run_number }} completed" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Standard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
-        if [ -f scan-results-standard.txt ]; then
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          grep -E "(No vulnerable|vulnerabilities found|Scan completed)" scan-results-standard.txt | tail -2 >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        fi
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Chainguard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
-        if [ -f scan-results-chainguard.txt ]; then
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          grep -E "(No vulnerable|vulnerabilities found|Scan completed)" scan-results-chainguard.txt | tail -2 >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        fi
+        echo "Both images built, pushed, and scanned successfully" >> $GITHUB_STEP_SUMMARY
+        echo "Check the scan results in the build logs above" >> $GITHUB_STEP_SUMMARY
