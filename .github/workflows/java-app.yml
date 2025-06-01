@@ -80,6 +80,7 @@ jobs:
             --metadata-file=image-metadata-standard.json \
             --load \
             java-app
+        fi
 
     - name: Push image to JFrog Artifactory
       run: |
