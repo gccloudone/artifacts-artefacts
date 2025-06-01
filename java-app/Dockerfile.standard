@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk AS builder
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/eclipse-temurin:21-jdk AS builder
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY src/main/java/com/example/*.java ./
 
 RUN javac *.java
 
-FROM eclipse-temurin:21-jre
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker/library/eclipse-temurin:21-jre
 
 WORKDIR /app
 
