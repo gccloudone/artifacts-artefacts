@@ -1,4 +1,4 @@
-name: Java Build
+name: Simple Java Build and Security Scan
 
 on:
   push:

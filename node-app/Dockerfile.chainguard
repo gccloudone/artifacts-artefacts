@@ -1,17 +1,5 @@
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0
-
 WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy application code
 COPY app.js .
-
-# Chainguard images already run as non-root
 EXPOSE 8080
-
-CMD ["npm", "start"]
+CMD ["node", "app.js"]
