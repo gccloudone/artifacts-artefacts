@@ -68,18 +68,18 @@ jobs:
         if [ "${{ matrix.dockerfile }}" = "chainguard" ]; then
           export DOCKER_BUILDKIT=0
           docker build \
-            -f ./java-app/Dockerfile.${{ matrix.dockerfile }} \
+            -f java-app/Dockerfile.chainguard \
             -t $IMAGE_TAG \
-            ./java-app
+            java-app
         else
           docker buildx build \
-            --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
+            --file java-app/Dockerfile.standard \
             --tag $IMAGE_TAG \
-            --cache-from=type=gha,scope=${{ matrix.dockerfile }} \
-            --cache-to=type=gha,mode=max,scope=${{ matrix.dockerfile }} \
-            --metadata-file=image-metadata-${{ matrix.dockerfile }}.json \
+            --cache-from=type=gha,scope=standard \
+            --cache-to=type=gha,mode=max,scope=standard \
+            --metadata-file=image-metadata-standard.json \
             --load \
-            ./java-app
+            java-app
 
     - name: Push image to JFrog Artifactory
       run: |
