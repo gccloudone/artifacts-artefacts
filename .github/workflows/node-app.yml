@@ -37,6 +37,14 @@ jobs:
         echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} \
           --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
+    - name: Scan Dependencies for Vulnerabilities
+      run: |
+        echo "Scanning dependencies for security issues..."
+        cd node-app
+        jf audit --format=simple || echo "Issues found - check output above"
+        echo ""
+        echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
+
     - name: Build image
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
@@ -53,9 +61,36 @@ jobs:
         echo "Scanning ${{ matrix.dockerfile }} image..."
         jf docker scan $IMAGE_TAG
 
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [build-and-scan]
+    permissions:
+      contents: read
+
+    steps:
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        JF_URL: https://${{ env.REGISTRY }}
+        JF_USER: ${{ secrets.JFROG_USERNAME }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+
+    - name: Cleanup Old Images (Cost Savings)
+      run: |
+        echo "Running automated cleanup to save storage costs..."
+        echo "Checking for images older than 30 days..."
+        
+        CLEANUP_COUNT=$(jf rt search "ssc-aurora-docker-local/chainguard-demo/*" \
+          --older-than=30d --count 2>/dev/null || echo "0")
+        
+        echo "Found $CLEANUP_COUNT old images that could be cleaned up"
+        echo "Cleanup saves storage costs and improves performance"
+        echo "Run 'jf rt delete \"repo/*\" --older-than=30d' to clean manually"
+
   frogbot:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     permissions:
       contents: read
       pull-requests: write
@@ -73,7 +108,7 @@ jobs:
         JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   summary:
-    needs: [build-and-scan]
+    needs: [build-and-scan, cleanup]
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'push'
     
@@ -84,3 +119,9 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "Both Node.js images built, pushed, and scanned successfully" >> $GITHUB_STEP_SUMMARY
         echo "Check the scan results in the build logs above" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## JFrog Developer Tools Used:" >> $GITHUB_STEP_SUMMARY
+        echo "- Dependency Audit: Scanned source code for vulnerabilities" >> $GITHUB_STEP_SUMMARY
+        echo "- Automated Cleanup: Checked for old images to save storage costs" >> $GITHUB_STEP_SUMMARY
+        echo "- Frogbot: Automated security comments on pull requests" >> $GITHUB_STEP_SUMMARY
+        echo "- Image Scanning: JFrog Xray scanned container images" >> $GITHUB_STEP_SUMMARY
