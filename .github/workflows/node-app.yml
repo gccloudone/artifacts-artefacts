@@ -2,10 +2,10 @@ name: Simple Node.js Build and Security Scan
 
 on:
   push:
-    branches: [main, artifacts-artefacts/jfrog-cgd-demo]
+    branches: [main]
     paths: ["node-app/**"]
   pull_request:
-    branches: [main, artifacts-artefacts/jfrog-cgd-demo]
+    branches: [main]
     paths: ["node-app/**"]
 
 env:

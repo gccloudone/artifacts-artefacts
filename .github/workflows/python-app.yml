@@ -2,10 +2,10 @@ name: Simple Python Build and Security Scan
 
 on:
   push:
-    branches: [main, artifacts-artefacts/jfrog-cgd-demo]
+    branches: [main]
     paths: ["python-app/**"]
   pull_request:
-    branches: [main, artifacts-artefacts/jfrog-cgd-demo]
+    branches: [main]
     paths: ["python-app/**"]
 
 env:

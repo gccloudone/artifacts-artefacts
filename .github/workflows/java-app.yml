@@ -2,10 +2,10 @@ name: Simple Java Build and Security Scan
 
 on:
   push:
-    branches: [main, artifacts-artefacts/jfrog-cgd-demo]
+    branches: [main]
     paths: ["java-app/**"]
   pull_request:
-    branches: [main, artifacts-artefacts/jfrog-cgd-demo]
+    branches: [main]
     paths: ["java-app/**"]
 
 env:
