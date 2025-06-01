@@ -1,12 +1,10 @@
-name: Python App - Security Comparison
+name: Simple Python Build and Security Scan
 
 on:
   push:
     branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
-    paths: [ 'python-app/**' ]
   pull_request:
-    branches: [ main ]
-    paths: [ 'python-app/**' ]
+    branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -15,68 +13,74 @@ env:
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
     strategy:
       matrix:
         dockerfile: [standard, chainguard]
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Set up JFrog CLI
+    - name: Setup JFrog CLI
       uses: jfrog/setup-jfrog-cli@v4
       env:
         JF_URL: https://${{ env.REGISTRY }}
         JF_USER: ${{ secrets.JFROG_USERNAME }}
-        JF_ACCESS_TOKEN: ${{ secrets.JFROG_IDENTITY_TOKEN }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
 
-    - name: Test JFrog connection
+    - name: Docker login
       run: |
-        jf --version
-        jf rt ping
+        echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} \
+          --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
-    - name: Configure Docker to use JFrog CLI credentials
+    - name: Build image
       run: |
-        echo ${{ secrets.JFROG_IDENTITY_TOKEN }} | docker login ${{ env.REGISTRY }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+        docker build -f python-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG python-app
 
-    - name: Build Docker image
+    - name: Push image
       run: |
-        docker build -f ./python-app/Dockerfile.${{ matrix.dockerfile }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} ./python-app
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+        docker push $IMAGE_TAG
 
-    - name: Push Docker image using JFrog CLI
+    - name: Scan with JFrog Xray
       run: |
-        jf docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }} --build-name=python-${{ matrix.dockerfile }} --build-number=${{ github.run_number }}
+        IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+        echo "Scanning ${{ matrix.dockerfile }} image..."
+        jf docker scan $IMAGE_TAG
 
-    - name: Publish build info to Artifactory
-      run: |
-        jf rt build-publish python-${{ matrix.dockerfile }} ${{ github.run_number }}
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        format: 'sarif'
-        output: 'trivy-results-${{ matrix.dockerfile }}.sarif'
-
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: 'trivy-results-${{ matrix.dockerfile }}.sarif'
-        category: 'trivy-${{ matrix.dockerfile }}'
-
-  security-comparison:
-    needs: build-and-scan
+  frogbot:
     runs-on: ubuntu-latest
-    if: always()
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Frogbot
+      uses: jfrog/frogbot@v2
+      env:
+        JF_URL: https://${{ env.REGISTRY }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+        JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  summary:
+    needs: [build-and-scan]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'push'
     
     steps:
-    - name: Security Analysis Summary
+    - name: Build Summary
       run: |
-        echo "## Security Comparison Report" >> $GITHUB_STEP_SUMMARY
-        echo "This workflow builds the same Python application with both standard and Chainguard base images." >> $GITHUB_STEP_SUMMARY
-        echo "Check the Security tab for detailed vulnerability comparison between:" >> $GITHUB_STEP_SUMMARY
-        echo "- Standard Image: python:3.13-slim" >> $GITHUB_STEP_SUMMARY
-        echo "- Chainguard Image: cgr.dev/ssc-spc.gc.ca/python:3.13.3" >> $GITHUB_STEP_SUMMARY
+        echo "Build ${{ github.run_number }} completed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Both Python images built, pushed, and scanned successfully" >> $GITHUB_STEP_SUMMARY
+        echo "Check the scan results in the build logs above" >> $GITHUB_STEP_SUMMARY

@@ -1,15 +1,5 @@
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
-
 WORKDIR /app
-
-# Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
 COPY app.py .
-
-# Chainguard images already run as non-root
 EXPOSE 8080
-
 CMD ["python", "app.py"]
