@@ -2,9 +2,9 @@ name: Simple Java Build and Security Scan
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
