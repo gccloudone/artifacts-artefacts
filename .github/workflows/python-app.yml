@@ -106,6 +106,7 @@ jobs:
         JF_URL: https://${{ env.REGISTRY }}
         JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
         JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
 
   summary:
     needs: [build-and-scan, cleanup]
