@@ -50,7 +50,13 @@ jobs:
     - name: Scan with JFrog Xray
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-        jf docker scan $IMAGE_TAG
+        jf docker scan $IMAGE_TAG > scan-results-${{ matrix.dockerfile }}.txt 2>&1 || true
+
+    - name: Upload scan results
+      uses: actions/upload-artifact@v4
+      with:
+        name: scan-results-${{ matrix.dockerfile }}
+        path: scan-results-${{ matrix.dockerfile }}.txt
 
   frogbot:
     runs-on: ubuntu-latest
@@ -77,8 +83,24 @@ jobs:
     if: always() && github.event_name == 'push'
     
     steps:
+    - name: Download scan results
+      uses: actions/download-artifact@v4
+      with:
+        pattern: scan-results-*
+        merge-multiple: true
+
     - name: Build Summary
       run: |
         echo "Build ${{ github.run_number }} completed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "Standard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
+        if [ -f scan-results-standard.txt ]; then
+          echo "Standard scan result:" >> $GITHUB_STEP_SUMMARY
+          tail -5 scan-results-standard.txt >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "Chainguard image: Built and scanned" >> $GITHUB_STEP_SUMMARY
+        if [ -f scan-results-chainguard.txt ]; then
+          echo "Chainguard scan result:" >> $GITHUB_STEP_SUMMARY
+          tail -5 scan-results-chainguard.txt >> $GITHUB_STEP_SUMMARY
+        fi
