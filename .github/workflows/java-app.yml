@@ -3,10 +3,8 @@ name: Java App - Security and Performance Pipeline
 on:
   push:
     branches: [ main, artifacts-artefacts/jfrog-cgd-demo ]
-    # paths: [ 'java-app/**' ]  # Commented out to run on all changes
   pull_request:
     branches: [ main ]
-    # paths: [ 'java-app/**' ]  # Commented out to run on all changes
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -44,16 +42,19 @@ jobs:
 
     - name: Configure JFrog and Docker authentication
       run: |
-        echo "Testing JFrog connectivity"
         jf --version
         jf rt ping
-
-        echo "Authenticating Docker to Artifactory"
         echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} \
           --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
 
-    - name: Set up Docker Buildx (Chainguard only)
+    - name: Pre-pull Chainguard base images (Workaround for BuildKit)
       if: ${{ matrix.dockerfile == 'chainguard' }}
+      run: |
+        docker pull ${{ env.REGISTRY }}/docker/ssc-spc.gc.ca/jdk:openjdk-24.0.1
+        docker pull ${{ env.REGISTRY }}/docker/ssc-spc.gc.ca/jre:openjdk-24.0.1
+
+    - name: Set up Docker Buildx (Standard only)
+      if: ${{ matrix.dockerfile == 'standard' }}
       uses: docker/setup-buildx-action@v3
       with:
         driver-opts: |
@@ -62,11 +63,15 @@ jobs:
 
     - name: Build Docker image
       run: |
-        echo "Building ${{ matrix.dockerfile }} image"
-
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
 
         if [ "${{ matrix.dockerfile }}" = "chainguard" ]; then
+          export DOCKER_BUILDKIT=0
+          docker build \
+            -f ./java-app/Dockerfile.${{ matrix.dockerfile }} \
+            -t $IMAGE_TAG \
+            ./java-app
+        else
           docker buildx build \
             --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
             --tag $IMAGE_TAG \
@@ -75,18 +80,10 @@ jobs:
             --metadata-file=image-metadata-${{ matrix.dockerfile }}.json \
             --load \
             ./java-app
-        else
-          export DOCKER_BUILDKIT=0
-          docker build \
-            --file ./java-app/Dockerfile.${{ matrix.dockerfile }} \
-            --tag $IMAGE_TAG \
-            ./java-app
-        fi
 
     - name: Push image to JFrog Artifactory
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-
         jf docker push $IMAGE_TAG \
           --build-name=java-${{ matrix.dockerfile }} \
           --build-number=${{ github.run_number }}
@@ -95,12 +92,10 @@ jobs:
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
         cosign sign --yes $IMAGE_TAG
-
-        echo "Verifying signature"
         cosign verify $IMAGE_TAG \
           --certificate-identity-regexp="https://github.com/${{ github.repository }}" \
           --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
-          || echo "Signature verification skipped in this environment"
+          || echo "Signature verification skipped"
 
     - name: Publish build metadata
       run: |
@@ -120,13 +115,11 @@ jobs:
     - name: Run detailed Trivy analysis
       run: |
         IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-
         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
           -v $(pwd):/workspace aquasec/trivy:latest image \
           --format json \
           --output /workspace/trivy-detailed-${{ matrix.dockerfile }}.json \
           $IMAGE_TAG
-
         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
           -v $(pwd):/workspace aquasec/trivy:latest image \
           --format table \
@@ -169,10 +162,9 @@ jobs:
         echo "- Build \`${{ github.sha }}\` #${{ github.run_number }} triggered by \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "| Type | Base | Signed | Scanned |" >> $GITHUB_STEP_SUMMARY
         echo "|------|------|--------|---------|" >> $GITHUB_STEP_SUMMARY
-        echo "| Standard | openjdk | ✔️ | ✔️ |" >> $GITHUB_STEP_SUMMARY
-        echo "| Chainguard | jdk | ✔️ | ✔️ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Standard | openjdk | Yes | Yes |" >> $GITHUB_STEP_SUMMARY
+        echo "| Chainguard | jdk | Yes | Yes |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-
         echo "## Review" >> $GITHUB_STEP_SUMMARY
         echo "- Check 'Security' tab for vulnerability breakdown" >> $GITHUB_STEP_SUMMARY
         echo "- Compare Chainguard vs Standard image posture" >> $GITHUB_STEP_SUMMARY
