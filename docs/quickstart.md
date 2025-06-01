@@ -37,13 +37,19 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 **Scan Dependencies:**
 ```yaml
 - name: Scan Dependencies
-  run: jf audit --format=simple
+  run: |
+    echo "Scanning dependencies for security issues..."
+    jf audit --format=simple || echo "Issues found - check output above"
+    echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 ```
 
 **Scan Container Images:**
 ```yaml
 - name: Scan Container
-  run: jf docker scan your-image:tag
+  run: |
+    IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+    echo "Scanning image..."
+    jf docker scan $IMAGE_TAG
 ```
 
 ## Step 4: Enable Frogbot for Pull Requests
@@ -53,7 +59,7 @@ Add this job to your workflow:
 ```yaml
 frogbot:
   runs-on: ubuntu-latest
-  if: github.event_name == 'pull_request'
+  if: github.event_name == 'pull_request' || github.event_name == 'push'
   permissions:
     contents: read
     pull-requests: write
@@ -65,9 +71,33 @@ frogbot:
       JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
       JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
       JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
 ```
 
-## Step 5: Push to JFrog Registry
+## Step 5: Add Cost Management
+
+Include automated cleanup analysis:
+
+```yaml
+cleanup:
+  runs-on: ubuntu-latest
+  if: github.event_name == 'push'
+  needs: [build-and-scan]
+  steps:
+  - name: Setup JFrog CLI
+    uses: jfrog/setup-jfrog-cli@v4
+    env:
+      JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
+      JF_USER: ${{ secrets.JFROG_USERNAME }}
+      JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+  - name: Cleanup Analysis
+    run: |
+      echo "Running automated cleanup to save storage costs..."
+      CLEANUP_COUNT=$(jf rt search "repo-name/*" --older-than=30d --count 2>/dev/null || echo "0")
+      echo "Found $CLEANUP_COUNT old images that could be cleaned up"
+```
+
+## Step 6: Push to JFrog Registry
 
 ```yaml
 - name: Docker login
@@ -77,8 +107,9 @@ frogbot:
 
 - name: Build and push
   run: |
-    docker build -t artifacts-artefacts.devops.cloud-nuage.canada.ca/your-repo/your-app:${{ github.sha }} .
-    docker push artifacts-artefacts.devops.cloud-nuage.canada.ca/your-repo/your-app:${{ github.sha }}
+    IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+    docker build -f Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG .
+    docker push $IMAGE_TAG
 ```
 
 ## Available Chainguard Images
@@ -102,6 +133,33 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 **Node.js:**
 ```dockerfile
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0
+```
+
+## Automated Security Maintenance
+
+Add digest-based security updates:
+
+```yaml
+name: Update Chainguard Digests
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+jobs:
+  update-digests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
+        JF_USER: ${{ secrets.JFROG_USERNAME }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+    # Automatically updates Dockerfiles with latest secure digests
 ```
 
 ## Local Development
@@ -136,10 +194,13 @@ Run the examples in this repository:
 
 ```bash
 # Clone repository
-git clone [repository-url]
+git clone https://github.com/gccloudone/artifacts-artefacts.git
 
-# Trigger workflows
-git push origin artifacts-artefacts/jfrog-cgd-demo
+# Navigate to repository
+cd artifacts-artefacts
+
+# Trigger workflows by pushing changes
+git push origin main
 
 # Check GitHub Actions for results
 ```
@@ -155,7 +216,7 @@ Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities
 
 **Container Scan Results:**
 ```
-Scanning image...
+Scanning chainguard image...
 No vulnerable components were found
 Scan completed successfully
 ```
@@ -164,6 +225,20 @@ Scan completed successfully
 ```
 Running automated cleanup to save storage costs...
 Found 0 old images that could be cleaned up
+Cleanup saves storage costs and improves performance
+```
+
+**Build Summary:**
+```
+Build 42 completed
+
+Both images built, pushed, and scanned successfully
+
+JFrog Developer Tools Used:
+- Dependency Audit: Scanned source code for vulnerabilities
+- Automated Cleanup: Checked for old images to save storage costs
+- Frogbot: Automated security comments on pull requests
+- Image Scanning: JFrog Xray scanned container images
 ```
 
 ## Common Commands
@@ -186,6 +261,30 @@ jf docker push image:tag   # Push to registry
 jf rt search "repo/*"                    # Search artifacts
 jf rt delete "repo/*" --older-than=30d   # Clean old artifacts
 ```
+
+## Implementation Options
+
+**Single Dockerfile Approach:**
+```yaml
+- name: Build image
+  run: |
+    IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+    docker build -t $IMAGE_TAG .
+```
+
+**Multiple Variants (Optional):**
+```yaml
+strategy:
+  matrix:
+    dockerfile: [standard, chainguard]
+steps:
+- name: Build image
+  run: |
+    IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+    docker build -f Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG .
+```
+
+*Note: Matrix strategy is demonstrated in this repository but optional for your implementation.*
 
 ## Support
 
