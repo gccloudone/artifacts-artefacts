@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
-  IMAGE_NAME: ssc-aurora-docker-local/chainguard-demo/python-app
+  IMAGE_NAME: ssc-aurora-docker-local/python-app
 
 jobs:
   build-and-scan:
@@ -87,7 +87,7 @@ jobs:
           echo "Running automated cleanup to save storage costs..."
           echo "Checking for images older than 30 days..."
 
-          CLEANUP_COUNT=$(jf rt search "ssc-aurora-docker-local/chainguard-demo/*" \
+          CLEANUP_COUNT=$(jf rt search "ssc-aurora-docker-local/*" \
             --older-than=30d --count 2>/dev/null || echo "0")
 
           echo "Found $CLEANUP_COUNT old images that could be cleaned up"
