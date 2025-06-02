@@ -1,0 +1,11 @@
+pull_request_rules:
+  - name: auto-merge approved Chainguard digest updates
+    conditions:
+      - label=automated
+      - label=security
+      - status-success=build
+      - "approved-reviews-by>=1"
+      - "author=peter-evans[bot]"
+    actions:
+      merge:
+        method: squash
