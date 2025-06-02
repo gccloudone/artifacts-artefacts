@@ -1,0 +1,5 @@
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0
+WORKDIR /app
+COPY app.js .
+EXPOSE 8080
+CMD ["node", "app.js"]

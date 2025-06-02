@@ -1,0 +1,5 @@
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
+WORKDIR /app
+COPY app.py .
+EXPOSE 8080
+CMD ["python", "app.py"]
