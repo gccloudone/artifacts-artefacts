@@ -3,10 +3,10 @@ name: Simple Python Build and Security Scan
 on:
   push:
     branches: [main]
-    paths: ["python-app/**"]
+    paths: ["examples/python-app/**"]
   pull_request:
     branches: [main]
-    paths: ["python-app/**"]
+    paths: ["examples/python-app/**"]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -42,7 +42,7 @@ jobs:
       - name: Scan Dependencies for Vulnerabilities
         run: |
           echo "Scanning dependencies for security issues..."
-          cd python-app
+          cd examples/python-app
           jf audit --format=simple || echo "Issues found - check output above"
           echo ""
           echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
@@ -50,7 +50,7 @@ jobs:
       - name: Build image
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-          docker build -f python-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG python-app
+          docker build -f examples/python-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG examples/python-app
 
       - name: Push image
         run: |
