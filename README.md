@@ -100,6 +100,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 The repository contains complete implementation examples:
 
 ```
+examples/
 ├── java-app/          # Java application with JFrog + Chainguard integration
 ├── python-app/        # Python application example
 ├── node-app/          # Node.js application example

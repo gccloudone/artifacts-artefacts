@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
     - uses: actions/checkout@v4
 
@@ -32,25 +32,25 @@ jobs:
         docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21
         JDK_DIGEST=$(docker inspect artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21 --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
         echo "JDK_DIGEST=$JDK_DIGEST" >> $GITHUB_ENV
-        
+
         docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21
         JRE_DIGEST=$(docker inspect artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21 --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
         echo "JRE_DIGEST=$JRE_DIGEST" >> $GITHUB_ENV
-        
+
         docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
         PYTHON_DIGEST=$(docker inspect artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3 --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
         echo "PYTHON_DIGEST=$PYTHON_DIGEST" >> $GITHUB_ENV
-        
+
         docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0
         NODE_DIGEST=$(docker inspect artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0 --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
         echo "NODE_DIGEST=$NODE_DIGEST" >> $GITHUB_ENV
 
     - name: Update Dockerfiles
       run: |
-        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk@$JDK_DIGEST|g" java-app/Dockerfile.chainguard
-        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre@$JRE_DIGEST|g" java-app/Dockerfile.chainguard
-        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python@$PYTHON_DIGEST|g" python-app/Dockerfile.chainguard
-        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node@$NODE_DIGEST|g" node-app/Dockerfile.chainguard
+        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk@$JDK_DIGEST|g" examples/java-app/Dockerfile.chainguard
+        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre@$JRE_DIGEST|g" examples/java-app/Dockerfile.chainguard
+        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python@$PYTHON_DIGEST|g" examples/python-app/Dockerfile.chainguard
+        sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node@$NODE_DIGEST|g" examples/node-app/Dockerfile.chainguard
 
     - name: Check for changes
       id: changes
@@ -70,7 +70,7 @@ jobs:
         title: "Update Chainguard image digests"
         body: |
           Automated update of Chainguard base images to latest digests.
-          
+
           Updates:
           - Java JDK: ${{ env.JDK_DIGEST }}
           - Java JRE: ${{ env.JRE_DIGEST }}

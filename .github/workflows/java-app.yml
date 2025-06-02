@@ -3,10 +3,10 @@ name: Simple Java Build and Security Scan
 on:
   push:
     branches: [main]
-    paths: ["java-app/**"]
+    paths: ["examples/java-app/**"]
   pull_request:
     branches: [main]
-    paths: ["java-app/**"]
+    paths: ["examples/java-app/**"]
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -42,7 +42,7 @@ jobs:
       - name: Scan Dependencies for Vulnerabilities
         run: |
           echo "Scanning dependencies for security issues..."
-          cd java-app
+          cd examples/java-app
           jf audit --format=simple || echo "Issues found - check output above"
           echo ""
           echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
@@ -50,7 +50,7 @@ jobs:
       - name: Build image
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-          docker build -f java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG java-app
+          docker build -f examples/java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG java-app
 
       - name: Push image
         run: |

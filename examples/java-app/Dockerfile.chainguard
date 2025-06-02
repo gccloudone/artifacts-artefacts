@@ -1,0 +1,10 @@
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21 AS builder
+WORKDIR /app
+COPY src/main/java/com/example/*.java ./
+RUN javac *.java
+
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21
+WORKDIR /app
+COPY --from=builder /app/*.class ./
+EXPOSE 8080
+CMD ["java", "App"]
