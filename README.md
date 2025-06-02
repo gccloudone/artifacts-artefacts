@@ -1,5 +1,9 @@
 # GC Secure Artifacts
 
+![Java](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/java-app.yml/badge.svg)
+![Python](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/python-app.yml/badge.svg)
+![Node.js](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/node-app.yml/badge.svg)
+
 Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secure Artifacts](https://artifacts-artefacts.devops.cloud-nuage.canada.ca), a secure, scalable, centralized artifact management service underpinned by the JFrog Enterprise+ platform, self-hosted on the GC Private Cloud.
 
 - https://artifacts-artefacts.devops.cloud-nuage.canada.ca

@@ -56,7 +56,10 @@ jobs:
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           docker push $IMAGE_TAG
-
+      - name: Publish Build Info
+        run: |
+          jf rt build-add-git ${{ matrix.dockerfile }}-${{ github.run_number }}
+          jf rt build-publish ${{ matrix.dockerfile }}-${{ github.run_number }}
       - name: Scan with JFrog Xray
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
@@ -77,10 +80,6 @@ jobs:
           JF_URL: https://${{ env.REGISTRY }}
           JF_USER: ${{ secrets.JFROG_USERNAME }}
           JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
-          JF_INCLUDE_ALL_VULNERABILITIES: "true"
-          JF_ENABLE_SAST: "true"
-          JF_ENABLE_SECRETS: "true"
-          JF_ENABLE_IAC: "true"
 
       - name: Cleanup Old Images (Cost Savings)
         run: |
@@ -113,6 +112,10 @@ jobs:
           JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
+          JF_INCLUDE_ALL_VULNERABILITIES: "true"
+          JF_ENABLE_SAST: "true"
+          JF_ENABLE_SECRETS: "true"
+          JF_ENABLE_IAC: "true"
 
   summary:
     needs: [build-and-scan, cleanup]
