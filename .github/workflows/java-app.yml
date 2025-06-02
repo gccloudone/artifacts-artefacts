@@ -58,8 +58,8 @@ jobs:
           docker push $IMAGE_TAG
       - name: Publish Build Info
         run: |
-          jf rt build-add-git ${{ matrix.dockerfile }}-${{ github.run_number }}
-          jf rt build-publish ${{ matrix.dockerfile }}-${{ github.run_number }}
+          jf rt build-add-git ${{ matrix.dockerfile }}-app ${{ github.run_number }}
+          jf rt build-publish ${{ matrix.dockerfile }}-app ${{ github.run_number }}
 
       - name: Scan with JFrog Xray
         run: |
