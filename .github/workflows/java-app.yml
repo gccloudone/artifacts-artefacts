@@ -3,10 +3,14 @@ name: Simple Java Build and Security Scan
 on:
   push:
     branches: [main]
-    paths: ["examples/java-app/**"]
+    paths:
+      - "examples/java-app/**"
+      - ".github/workflows/**"
   pull_request:
     branches: [main]
-    paths: ["examples/java-app/**"]
+    paths:
+      - "examples/java-app/**"
+      - ".github/workflows/**"
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
