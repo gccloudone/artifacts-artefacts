@@ -23,10 +23,11 @@ jobs:
         id: query
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
-          SNIPPET='JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca'
+          SEARCH_STRING='JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca'
           # URL‑encode the snippet
-          QUERY=$(printf '%s' "$SNIPPET" | jq -s -R -r @uri)
+          QUERY=$(printf '%s' "$SEARCH_STRING" | jq -s -R -r @uri)
 
           PAGE=1
           rm -f all_repos.txt
@@ -49,52 +50,3 @@ jobs:
             ((PAGE++))
           done
 
-          sort -u all_repos.txt > unique_repos.txt
-
-          TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          COUNT=$(wc -l < unique_repos.txt)
-          mkdir -p data
-          FILE=data/repo_history.json
-
-          # Append to JSON history (pure bash + jq)
-          if [ ! -f "$FILE" ]; then
-            echo "[{\"timestamp\":\"$TIMESTAMP\",\"count\":$COUNT}]" > "$FILE"
-          else
-            tmp=$(mktemp)
-            jq ". + [{\"timestamp\":\"\"$TIMESTAMP\"\",\"count\":$COUNT}]" "$FILE" > "$tmp"
-            mv "$tmp" "$FILE"
-          fi
-        shell: bash
-
-      - name: Show Current Usage Stats
-        run: |
-          if [ -f data/repo_history.json ]; then
-            # Extract the last record's timestamp and count
-            LAST_ENTRY=$(jq '.[-1]' data/repo_history.json)
-            LAST_TS=$(echo "$LAST_ENTRY" | jq -r '.timestamp')
-            LAST_COUNT=$(echo "$LAST_ENTRY" | jq -r '.count')
-
-            echo "🔍 Current “JF_URL” Usage:"
-            echo "  As of: $LAST_TS"
-            echo "  Unique repos: $LAST_COUNT"
-            echo
-            echo "Full history:"
-            jq '.' data/repo_history.json
-          else
-            echo "⚠️  No history file found (data/repo_history.json)"
-          fi
-
-      - name: Generate SVG Chart (Node.js)
-        run: |
-          node scripts/generate_chart.js
-
-      - name: Commit artifacts
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git add unique_repos.txt data/repo_history.json stats/usage/totat.svg
-          git commit -m "ci: update snippet usage and chart [skip ci]" || echo "Nothing to commit"
-          git push
