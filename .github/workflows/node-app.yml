@@ -1,4 +1,4 @@
-name: node-app.yml
+name: node-app
 
 on:
   push:

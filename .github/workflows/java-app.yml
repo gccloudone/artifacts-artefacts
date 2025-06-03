@@ -1,4 +1,4 @@
-name: java-app.yml
+name: java-app
 
 on:
   push:

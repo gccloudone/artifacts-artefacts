@@ -1,4 +1,4 @@
-name: update-chainguard-digests.yml
+name: update-chainguard-digests
 
 on:
   workflow_dispatch:
