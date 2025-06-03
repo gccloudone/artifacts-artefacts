@@ -163,4 +163,4 @@ jobs:
           echo "- Automated Cleanup: Checked for old images to save storage costs" >> $GITHUB_STEP_SUMMARY
           echo "- Frogbot: Automated security comments on pull requests" >> $GITHUB_STEP_SUMMARY
           echo "- Image Scanning: JFrog Xray scanned container images" >> $GITHUB_STEP_SUMMARY
-          echo "- OIDC Authentication: Secure credential-less authentication" >> $GITHUB_STEP_SUMMARY
+          echo "- OIDC Authentication: Secure credentials-less authentication" >> $GITHUB_STEP_SUMMARY
