@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import matplotlib.dates as mdates
 
+logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
+
 # Use XKCD style for a hand-drawn effect
 plt.xkcd()
 
