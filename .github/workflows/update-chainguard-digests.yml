@@ -9,23 +9,22 @@ jobs:
   update-digests:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup JFrog CLI
+      - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-          JF_USER: ${{ secrets.JFROG_USERNAME }}
-          JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+        with:
+          oidc-provider-name: github-oidc
 
-      - name: Docker login
-        run: |
-          echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login artifacts-artefacts.devops.cloud-nuage.canada.ca \
-            --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
+      - name: Docker login via OIDC
+        run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
 
       - name: Get latest digests
         run: |
