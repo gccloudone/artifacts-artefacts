@@ -39,10 +39,10 @@ jobs:
           echo "Unique repos found: $count"
 
           # Ensure data directory exists
-          mkdir -p data
+          mkdir -p stats
 
           # Define the CSV file path
-          file="data/usage.csv"
+          file="stats/usage.csv"
 
           # If the file doesn't exist, add a header
           if [ ! -f "$file" ]; then
@@ -72,7 +72,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Stage CSV and PNG
-          git add data/usage.csv data/usage.png
+          git add stats/usage.csv stats/usage.png
 
           # Commit changes if there are any
           git commit -m "Add usage for $(date -u +%Y-%m-%d): ${{ steps.count_repos.outputs.count }}" || echo "No changes to commit"

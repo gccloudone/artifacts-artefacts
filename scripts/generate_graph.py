@@ -10,7 +10,7 @@ import matplotlib.dates as mdates
 plt.xkcd()
 
 # Read the CSV
-df = pd.read_csv("data/usage.csv", parse_dates=["date"])
+df = pd.read_csv("stats/usage.csv", parse_dates=["date"])
 
 # Drop duplicate dates (keep last if multiple entries on same day)
 df = df.drop_duplicates(subset="date", keep="last")
@@ -44,7 +44,6 @@ ax.set_title(title)
 
 plt.tight_layout()
 
-# Output to data/usage.png
-output_path = "data/usage.png"
+output_path = "stats/usage.png"
 plt.savefig(output_path)
 print(f"Saved graph to {output_path}")
