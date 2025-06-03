@@ -61,12 +61,14 @@ jobs:
       - name: Install plotting dependencies
         run: |
           pip install pandas matplotlib
-
+          
       - name: Generate XKCD-style usage graph
         run: |
           python - << 'EOF'
+          import os
           import pandas as pd
           import matplotlib.pyplot as plt
+          from matplotlib.ticker import MaxNLocator
 
           # Use XKCD style for a hand-drawn effect
           plt.xkcd()
@@ -74,18 +76,33 @@ jobs:
           # Read the CSV into a DataFrame
           df = pd.read_csv('data/usage.csv', parse_dates=['date'])
 
+          # Fetch chart title from environment (fallback if not set)
+          title = os.getenv('CHART_TITLE', 'Usage Over Time')
+
+          # Create figure and axis
+          fig, ax = plt.subplots()
+
           # Plot the data
-          plt.figure()
-          plt.plot(df['date'], df['count'], marker='o')
-          plt.xlabel('Date')
-          plt.ylabel('Unique Repo Count')
-          plt.title('JF_URL Usage Over Time')
+          ax.plot(df['date'], df['count'], marker='o')
+
+          # Force Y-axis to show only integer ticks
+          ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+          # Set labels and title
+          ax.set_xlabel('Date')
+          ax.set_ylabel('Repo Count')
+          ax.set_title(title)
+
+          # Rotate X-axis labels for readability
+          fig.autofmt_xdate()
+
           plt.tight_layout()
 
           # Save the figure
           img_path = 'data/usage.png'
           plt.savefig(img_path)
           EOF
+
 
       - name: Commit and push updated data file + graph
         run: |
