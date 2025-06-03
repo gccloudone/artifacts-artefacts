@@ -1,4 +1,4 @@
-name: Track “JF_URL” Usage (Node & Bash)
+name: Calculate Usage
 
 on:
   schedule:
@@ -66,10 +66,9 @@ jobs:
           fi
         shell: bash
 
-
       - name: Generate SVG Chart (Node.js)
         run: |
-          node generate_chart.js
+          node scripts/generate_chart.js
 
       - name: Commit artifacts
         env:
