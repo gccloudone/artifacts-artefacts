@@ -1,10 +1,11 @@
 import os
 import pandas as pd
 import matplotlib
-# Use a non‐interactive backend so it survives on a headless runner
+# Use a non‐interactive backend so it works on the runner
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+import matplotlib.dates as mdates
 
 # ============ Begin plot logic ============
 
@@ -14,8 +15,11 @@ plt.xkcd()
 # Read the CSV
 df = pd.read_csv("data/usage.csv", parse_dates=["date"])
 
-# If you have duplicate dates, keep only the last occurrence for each date:
+# Drop duplicate dates (keep last if multiple entries on same day)
 df = df.drop_duplicates(subset="date", keep="last")
+
+# Convert datetime to just date, so no hours show up on the X‑axis
+df["just_date"] = df["date"].dt.date
 
 # Get a title from the environment (fallback to a default)
 title = os.getenv("CHART_TITLE", "Usage Over Time")
@@ -23,19 +27,23 @@ title = os.getenv("CHART_TITLE", "Usage Over Time")
 # Create figure + axis
 fig, ax = plt.subplots()
 
-# Plot the date vs. count
-ax.plot(df["date"], df["count"], marker="o")
+# Plot using the “just_date” column (which is a plain date, no time)
+ax.plot(df["just_date"], df["count"], marker="o")
 
 # Force Y‑axis ticks to be integers only
 ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+# Force X‑axis to show one tick per day
+ax.xaxis.set_major_locator(mdates.DayLocator())  
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+
+# Rotate X‑axis labels 45° so they don’t overlap
+fig.autofmt_xdate(rotation=45)
 
 # Labels + title
 ax.set_xlabel("Date")
 ax.set_ylabel("Repo Count")
 ax.set_title(title)
-
-# Rotate X‑axis date labels for readability
-fig.autofmt_xdate()
 
 plt.tight_layout()
 
