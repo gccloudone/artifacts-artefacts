@@ -66,6 +66,24 @@ jobs:
           fi
         shell: bash
 
+      - name: Show Current Usage Stats
+        run: |
+          if [ -f data/repo_history.json ]; then
+            # Extract the last record's timestamp and count
+            LAST_ENTRY=$(jq '.[-1]' data/repo_history.json)
+            LAST_TS=$(echo "$LAST_ENTRY" | jq -r '.timestamp')
+            LAST_COUNT=$(echo "$LAST_ENTRY" | jq -r '.count')
+
+            echo "🔍 Current “JF_URL” Usage:"
+            echo "  As of: $LAST_TS"
+            echo "  Unique repos: $LAST_COUNT"
+            echo
+            echo "Full history:"
+            jq '.' data/repo_history.json
+          else
+            echo "⚠️  No history file found (data/repo_history.json)"
+          fi
+
       - name: Generate SVG Chart (Node.js)
         run: |
           node scripts/generate_chart.js
