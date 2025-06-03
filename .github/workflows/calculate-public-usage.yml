@@ -52,7 +52,12 @@ jobs:
 
           # Append today's date and the count
           echo "$current_date,$count" >> "$file"
-
+          
+      - name: Install Comic Sans‑like font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-croscore-comicsans
+          
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
