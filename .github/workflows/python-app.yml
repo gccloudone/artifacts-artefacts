@@ -39,7 +39,6 @@ jobs:
           JF_PROJECT: ssc-aurora
         with:
           oidc-provider-name: gc-secure-artifacts
-          oidc-audience: https://github.com/gccloudone
 
       - name: Docker login via OIDC
         run: jf docker-login ${{ env.REGISTRY }}
@@ -89,7 +88,6 @@ jobs:
           JF_PROJECT: ssc-aurora
         with:
           oidc-provider-name: gc-secure-artifacts
-          oidc-audience: https://github.com/gccloudone
 
       - name: Cleanup Old Images (Cost Savings)
         run: |

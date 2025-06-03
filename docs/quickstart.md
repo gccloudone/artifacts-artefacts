@@ -71,7 +71,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
     JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
   with:
     oidc-provider-name: gc-secure-artifacts
-    oidc-audience: https://github.com/gccloudone
+
 
 - name: Docker login via OIDC
   run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -140,7 +140,7 @@ cleanup:
       JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
     with:
       oidc-provider-name: gc-secure-artifacts
-      oidc-audience: https://github.com/gccloudone
+
   - name: Cleanup Analysis
     run: |
       echo "Running automated cleanup to save storage costs..."
@@ -209,7 +209,7 @@ jobs:
         JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
       with:
         oidc-provider-name: gc-secure-artifacts
-        oidc-audience: https://github.com/gccloudone
+
     # Automatically updates Dockerfiles with latest secure digests
 ```
 
