@@ -19,7 +19,7 @@ df = df.drop_duplicates(subset="date", keep="last")
 df["just_date"] = df["date"].dt.date
 
 # Get a title from the environment (fallback to a default)
-title = os.getenv("CHART_TITLE", "Publig Github Usage Over Time")
+title = os.getenv("CHART_TITLE", "Public Github Usage Over Time")
 
 # Create figure + axis
 fig, ax = plt.subplots(figsize=(12, 6))
