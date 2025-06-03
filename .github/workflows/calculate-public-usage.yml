@@ -53,13 +53,51 @@ jobs:
           # Append today's date and the count
           echo "$current_date,$count" >> "$file"
 
-      - name: Commit and push updated data file
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install plotting dependencies
         run: |
-          # Configure git author for the commit
+          pip install pandas matplotlib
+
+      - name: Generate XKCD-style usage graph
+        run: |
+          python - << 'EOF'
+          import pandas as pd
+          import matplotlib.pyplot as plt
+
+          # Use XKCD style for a hand-drawn effect
+          plt.xkcd()
+
+          # Read the CSV into a DataFrame
+          df = pd.read_csv('data/usage.csv', parse_dates=['date'])
+
+          # Plot the data
+          plt.figure()
+          plt.plot(df['date'], df['count'], marker='o')
+          plt.xlabel('Date')
+          plt.ylabel('Unique Repo Count')
+          plt.title('JF_URL Usage Over Time')
+          plt.tight_layout()
+
+          # Save the figure
+          img_path = 'data/usage.png'
+          plt.savefig(img_path)
+          EOF
+
+      - name: Commit and push updated data file + graph
+        run: |
+          # Configure git author
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Stage the CSV file, commit, and push
-          git add data/usage.csv
-          git commit -m "Add usage for $current_date: $count" || echo "No changes to commit"
+          # Stage CSV and PNG
+          git add data/usage.csv data/usage.png
+
+          # Commit changes if there are any
+          git commit -m "Add usage for $(date -u +%Y-%m-%d): ${{ steps.count_repos.outputs.count }}" || echo "No changes to commit"
+
+          # Push back to the default branch
           git push
