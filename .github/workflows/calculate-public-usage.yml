@@ -57,19 +57,19 @@ jobs:
 
           # Append to JSON history
           node << 'EOF'
-          const fs = require('fs');
-          let data = [];
-          const file = 'data/repo_history.json';
-          const ts = '$TIMESTAMP';
-          const cnt = $COUNT;
+const fs = require('fs');
+let data = [];
+const file = 'data/repo_history.json';
+const ts = '$TIMESTAMP';
+const cnt = $COUNT;
 
-          // Load existing
-          if (fs.existsSync(file)) {
-            data = JSON.parse(fs.readFileSync(file));
-          }
-          data.push({ timestamp: ts, count: cnt });
-          fs.writeFileSync(file, JSON.stringify(data, null, 2));
-          EOF
+// Load existing
+if (fs.existsSync(file)) {
+  data = JSON.parse(fs.readFileSync(file));
+}
+data.push({ timestamp: ts, count: cnt });
+fs.writeFileSync(file, JSON.stringify(data, null, 2));
+EOF
 
       - name: Generate SVG Chart (Node.js)
         run: |
