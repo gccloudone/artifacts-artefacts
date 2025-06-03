@@ -1,10 +1,9 @@
-# .github/workflows/calculate-usage.yml
+# .github/workflows/calculate-public-usage.yml
 name: Calculate Usage
 
-# Runs daily at 00:00 UTC, and also supports manual trigger
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
