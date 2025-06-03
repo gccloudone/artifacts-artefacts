@@ -1,0 +1,87 @@
+name: Track “JF_URL” Usage (Node & Bash)
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # daily at 04:00 UTC
+  workflow_dispatch:
+
+jobs:
+  count-and-chart:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install npm dependencies
+        run: |
+          npm install chartjs-node-canvas fs-extra
+
+      - name: Fetch and record count (Bash + jq)
+        id: query
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SNIPPET='JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca'
+          QUERY=$(printf '%s' "$SNIPPET" | jq -s -R -r @uri)
+
+          PAGE=1
+          rm -f all_repos.txt
+          touch all_repos.txt
+
+          while :; do
+            RESPONSE=$(curl -s \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/search/code?q=$QUERY+path:.github/workflows+extension:ya?ml&per_page=100&page=$PAGE")
+
+            echo "$RESPONSE" \
+              | jq -r '.items[]?.repository.full_name' \
+              >> all_repos.txt
+
+            COUNT_PAGE=$(echo "$RESPONSE" | jq '.items | length')
+            if [ "$COUNT_PAGE" -lt 100 ]; then
+              break
+            fi
+            ((PAGE++))
+          done
+
+          sort -u all_repos.txt > unique_repos.txt
+
+          TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          COUNT=$(wc -l < unique_repos.txt)
+          mkdir -p data
+          FILE=data/repo_history.json
+
+          # Append to JSON history
+          node << 'EOF'
+          const fs = require('fs');
+          let data = [];
+          const file = 'data/repo_history.json';
+          const ts = '$TIMESTAMP';
+          const cnt = $COUNT;
+
+          // Load existing
+          if (fs.existsSync(file)) {
+            data = JSON.parse(fs.readFileSync(file));
+          }
+          data.push({ timestamp: ts, count: cnt });
+          fs.writeFileSync(file, JSON.stringify(data, null, 2));
+          EOF
+
+      - name: Generate SVG Chart (Node.js)
+        run: |
+          node generate_chart.js
+
+      - name: Commit artifacts
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git add unique_repos.txt data/repo_history.json stats/usage/totat.svg
+          git commit -m "ci: update snippet usage and chart [skip ci]" || echo "Nothing to commit"
+          git push
