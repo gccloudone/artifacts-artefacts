@@ -152,7 +152,11 @@ cleanup:
 
 ```yaml
 - name: Docker login via OIDC
-  run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
+  uses: docker/login-action@v3
+  with:
+    registry: ${{ env.REGISTRY }}
+    username: ${{ steps.setup-jfrog-cli.outputs.oidc-user }}
+    password: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
 
 - name: Build and push
   run: |
