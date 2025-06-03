@@ -23,9 +23,6 @@ jobs:
         with:
           oidc-provider-name: github-oidc
 
-      - name: Docker login via OIDC
-        run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
-
       - name: Get latest digests
         run: |
           docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21

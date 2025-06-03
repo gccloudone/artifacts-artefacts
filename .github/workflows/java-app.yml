@@ -41,9 +41,6 @@ jobs:
         with:
           oidc-provider-name: github-oidc
 
-      - name: Docker login via OIDC
-        run: jf docker-login ${{ env.REGISTRY }}
-
       - name: Scan Dependencies for Vulnerabilities
         run: |
           echo "Scanning dependencies for security issues..."
@@ -55,12 +52,12 @@ jobs:
       - name: Build image
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-          docker build -f examples/java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG examples/java-app
+          jf docker build -f examples/java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG examples/java-app
 
       - name: Push image
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-          docker push $IMAGE_TAG
+          jf docker push $IMAGE_TAG
 
       - name: Publish Build Info
         run: |

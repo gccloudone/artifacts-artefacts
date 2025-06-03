@@ -71,10 +71,6 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
     JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
   with:
     oidc-provider-name: github-oidc
-
-
-- name: Docker login via OIDC
-  run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
 ```
 
 ## Step 4: Add Security Scanning
@@ -151,9 +147,6 @@ cleanup:
 ## Step 7: Push to JFrog Registry
 
 ```yaml
-- name: Docker login via OIDC
-  run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
-
 - name: Build and push
   run: |
     IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
