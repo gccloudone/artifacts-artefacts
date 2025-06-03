@@ -37,6 +37,7 @@ jobs:
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
           oidc-provider-name: gc-secure-artifacts
 

@@ -86,6 +86,7 @@ jobs:
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
           oidc-provider-name: gc-secure-artifacts
 
@@ -114,7 +115,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Frogbot with OIDC
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://${{ env.REGISTRY }}
+          JF_PROJECT: ssc-aurora
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+        with:
+          oidc-provider-name: gc-secure-artifacts
+
+      - name: Run Frogbot
         uses: jfrog/frogbot@v2
         env:
           JF_URL: https://${{ env.REGISTRY }}
@@ -125,8 +135,6 @@ jobs:
           JF_ENABLE_SAST: "true"
           JF_ENABLE_SECRETS: "true"
           JF_ENABLE_IAC: "true"
-          JF_OIDC_PROVIDER_NAME: gc-secure-artifacts
-          JF_OIDC_AUDIENCE: https://github.com/gccloudone
 
   summary:
     needs: [build-and-scan, cleanup]
