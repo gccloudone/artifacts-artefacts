@@ -19,12 +19,13 @@ jobs:
         run: |
           npm install chartjs-node-canvas fs-extra
 
-      - name: Fetch and record count (Bash + jq)
+      - name: Fetch and record count (pure Bash + jq)
         id: query
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SNIPPET='JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca'
+          # URL‑encode the snippet
           QUERY=$(printf '%s' "$SNIPPET" | jq -s -R -r @uri)
 
           PAGE=1
@@ -55,21 +56,16 @@ jobs:
           mkdir -p data
           FILE=data/repo_history.json
 
-          # Append to JSON history
-          node << 'EOF'
-const fs = require('fs');
-let data = [];
-const file = 'data/repo_history.json';
-const ts = '$TIMESTAMP';
-const cnt = $COUNT;
+          # Append to JSON history (pure bash + jq)
+          if [ ! -f "$FILE" ]; then
+            echo "[{\"timestamp\":\"$TIMESTAMP\",\"count\":$COUNT}]" > "$FILE"
+          else
+            tmp=$(mktemp)
+            jq ". + [{\"timestamp\":\"\"$TIMESTAMP\"\",\"count\":$COUNT}]" "$FILE" > "$tmp"
+            mv "$tmp" "$FILE"
+          fi
+        shell: bash
 
-// Load existing
-if (fs.existsSync(file)) {
-  data = JSON.parse(fs.readFileSync(file));
-}
-data.push({ timestamp: ts, count: cnt });
-fs.writeFileSync(file, JSON.stringify(data, null, 2));
-EOF
 
       - name: Generate SVG Chart (Node.js)
         run: |
