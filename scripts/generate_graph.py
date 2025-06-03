@@ -1,15 +1,12 @@
 import os
 import pandas as pd
 import matplotlib
-# Use a non‐interactive backend so it works on the runner
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import matplotlib.dates as mdates
 
-# ============ Begin plot logic ============
-
-# Use XKCD style for a hand‑drawn effect
+# Use XKCD style for a hand-drawn effect
 plt.xkcd()
 
 # Read the CSV
@@ -18,7 +15,7 @@ df = pd.read_csv("data/usage.csv", parse_dates=["date"])
 # Drop duplicate dates (keep last if multiple entries on same day)
 df = df.drop_duplicates(subset="date", keep="last")
 
-# Convert datetime to just date, so no hours show up on the X‑axis
+# Convert datetime to just date (this ensures no time component)
 df["just_date"] = df["date"].dt.date
 
 # Get a title from the environment (fallback to a default)
@@ -27,17 +24,17 @@ title = os.getenv("CHART_TITLE", "Usage Over Time")
 # Create figure + axis
 fig, ax = plt.subplots()
 
-# Plot using the “just_date” column (which is a plain date, no time)
+# Plot using the “just_date” column
 ax.plot(df["just_date"], df["count"], marker="o")
 
-# Force Y‑axis ticks to be integers only
+# Force Y-axis ticks to be integers only
 ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
-# Force X‑axis to show one tick per day
+# Force X-axis to show one tick per unique date
 ax.xaxis.set_major_locator(mdates.DayLocator())  
-ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))  # Show only month-day (e.g., 06-01)
 
-# Rotate X‑axis labels 45° so they don’t overlap
+# Rotate X-axis labels 45° so they don’t overlap
 fig.autofmt_xdate(rotation=45)
 
 # Labels + title
