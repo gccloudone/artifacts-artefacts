@@ -1,4 +1,4 @@
-name: Simple Python Build and Security Scan
+name: python-app.yml
 
 on:
   push:

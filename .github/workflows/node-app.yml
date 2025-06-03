@@ -1,4 +1,4 @@
-name: Simple Node.js Build and Security Scan
+name: node-app.yml
 
 on:
   push:
