@@ -84,7 +84,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 - name: Scan Dependencies
   run: |
     echo "Scanning dependencies for security issues..."
-    jf audit --format=simple || echo "Issues found - check output above"
+    jf audit --format=table || echo "Issues found - check output above"
     echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 ```
 
