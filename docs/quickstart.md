@@ -70,7 +70,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
   env:
     JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
   with:
-    oidc-provider-name: gc-secure-artifacts
+    oidc-provider-name: github-oidc
 
 
 - name: Docker login via OIDC
@@ -139,7 +139,7 @@ cleanup:
     env:
       JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
     with:
-      oidc-provider-name: gc-secure-artifacts
+      oidc-provider-name: github-oidc
 
   - name: Cleanup Analysis
     run: |
@@ -208,7 +208,7 @@ jobs:
       env:
         JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
       with:
-        oidc-provider-name: gc-secure-artifacts
+        oidc-provider-name: github-oidc
 
     # Automatically updates Dockerfiles with latest secure digests
 ```

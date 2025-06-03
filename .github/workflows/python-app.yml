@@ -38,7 +38,7 @@ jobs:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
         with:
-          oidc-provider-name: gc-secure-artifacts
+          oidc-provider-name: github-oidc
 
       - name: Docker login via OIDC
         run: jf docker-login ${{ env.REGISTRY }}
@@ -88,7 +88,7 @@ jobs:
           JF_PROJECT: ssc-aurora
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
-          oidc-provider-name: gc-secure-artifacts
+          oidc-provider-name: github-oidc
 
       - name: Cleanup Old Images (Cost Savings)
         run: |
@@ -122,7 +122,7 @@ jobs:
           JF_PROJECT: ssc-aurora
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
-          oidc-provider-name: gc-secure-artifacts
+          oidc-provider-name: github-oidc
 
       - name: Run Frogbot
         uses: jfrog/frogbot@v2
