@@ -1,17 +1,28 @@
+# .github/workflows/calculate-usage.yml
 name: Calculate Usage
 
+# Runs daily at 00:00 UTC, and also supports manual trigger
 on:
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
   count_repos:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
       - name: Count unique repos referencing JF_URL
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Capture current date in YYYY-MM-DD format
+          # Capture current date in YYYY-MM-DD (UTC)
           current_date=$(date -u +%Y-%m-%d)
 
           # Run the GitHub Code Search API, extract repo names, dedupe, and count
@@ -27,3 +38,28 @@ jobs:
 
           echo "Date: $current_date"
           echo "Unique repos found: $count"
+
+          # Ensure data directory exists
+          mkdir -p data
+
+          # Define the CSV file path
+          file="data/usage.csv"
+
+          # If the file doesn't exist, add a header
+          if [ ! -f "$file" ]; then
+            echo "date,count" > "$file"
+          fi
+
+          # Append today's date and the count
+          echo "$current_date,$count" >> "$file"
+
+      - name: Commit and push updated data file
+        run: |
+          # Configure git author for the commit
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage the CSV file, commit, and push
+          git add data/usage.csv
+          git commit -m "Add usage for $current_date: $count" || echo "No changes to commit"
+          git push
