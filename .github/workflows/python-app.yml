@@ -141,7 +141,6 @@ jobs:
           JF_ENABLE_SAST: "true"
           JF_ENABLE_SECRETS: "true"
           JF_ENABLE_IAC: "true"
-          JF_OIDC_PROVIDER_NAME: github-oidc
 
   summary:
     needs: [build-and-scan, cleanup]
