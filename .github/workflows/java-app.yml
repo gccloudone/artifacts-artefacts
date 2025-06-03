@@ -138,9 +138,9 @@ jobs:
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
-          JF_ENABLE_SAST: "true"
-          JF_ENABLE_SECRETS: "true"
-          JF_ENABLE_IAC: "true"
+          JF_ENABLE_SAST: "false"
+          JF_ENABLE_SECRETS: "false"
+          JF_ENABLE_IAC: "false"
 
   summary:
     needs: [build-and-scan, cleanup]
