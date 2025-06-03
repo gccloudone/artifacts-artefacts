@@ -61,7 +61,7 @@ jobs:
       - name: Install plotting dependencies
         run: |
           pip install pandas matplotlib
-          
+
       - name: Generate XKCD-style usage graph
         run: |
           python - << 'EOF'
@@ -70,11 +70,14 @@ jobs:
           import matplotlib.pyplot as plt
           from matplotlib.ticker import MaxNLocator
 
-          # Use XKCD style for a hand-drawn effect
+          # Use XKCD style for a hand‑drawn effect
           plt.xkcd()
 
           # Read the CSV into a DataFrame
           df = pd.read_csv('data/usage.csv', parse_dates=['date'])
+
+          # Drop duplicate dates, keeping the last entry for any repeated day
+          df = df.drop_duplicates(subset='date', keep='last')
 
           # Fetch chart title from environment (fallback if not set)
           title = os.getenv('CHART_TITLE', 'Usage Over Time')
@@ -82,10 +85,10 @@ jobs:
           # Create figure and axis
           fig, ax = plt.subplots()
 
-          # Plot the data
+          # Plot the data (now each date appears only once)
           ax.plot(df['date'], df['count'], marker='o')
 
-          # Force Y-axis to show only integer ticks
+          # Force Y‑axis to show only integer ticks
           ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
           # Set labels and title
@@ -93,7 +96,7 @@ jobs:
           ax.set_ylabel('Repo Count')
           ax.set_title(title)
 
-          # Rotate X-axis labels for readability
+          # Rotate X‑axis labels for readability
           fig.autofmt_xdate()
 
           plt.tight_layout()
