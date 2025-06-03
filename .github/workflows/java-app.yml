@@ -89,6 +89,7 @@ jobs:
     steps:
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
+        id: setup-jfrog-cli
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
@@ -123,6 +124,7 @@ jobs:
 
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
+        id: setup-jfrog-cli
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
@@ -135,6 +137,7 @@ jobs:
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
+          JF_ACCESS_TOKEN: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
