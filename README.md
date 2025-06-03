@@ -31,7 +31,7 @@ For further insight into the GC Secure Artifacts initiative, below is an present
 
 
 ## Github Public Adoption
-<img src="https://github.com/KingBain/artifacts-artefacts/blob/main/stats/usage.png?raw=true" alt="Usage Over Time" style="width: 100%;" />
+<img src="stats/usage.png" alt="Usage Over Time" style="width: 100%;" />
 
 As the days go by, you can see how the count evolves… here is our github public adoption(Search Results).
 
