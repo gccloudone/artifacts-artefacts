@@ -34,6 +34,7 @@ jobs:
 
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
+        id: setup-jfrog-cli
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
@@ -42,7 +43,11 @@ jobs:
           oidc-provider-name: github-oidc
 
       - name: Docker login via OIDC
-        run: jf docker-login ${{ env.REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ steps.setup-jfrog-cli.outputs.oidc-user }}
+          password: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
 
       - name: Scan Dependencies for Vulnerabilities
         run: |
