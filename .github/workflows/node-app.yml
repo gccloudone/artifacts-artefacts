@@ -11,6 +11,7 @@ on:
     paths:
       - "examples/node-app/**"
       - ".github/workflows/**"
+
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
   IMAGE_NAME: ssc-aurora-docker-local/node-app
@@ -19,6 +20,7 @@ jobs:
   build-and-scan:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
       security-events: write
       pull-requests: write
@@ -30,17 +32,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup JFrog CLI
+      - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://${{ env.REGISTRY }}
-          JF_USER: ${{ secrets.JFROG_USERNAME }}
-          JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+        with:
+          oidc-provider-name: gc-secure-artifacts
+          oidc-audience: https://github.com/gccloudone
 
-      - name: Docker login
-        run: |
-          echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login ${{ env.REGISTRY }} \
-            --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
+      - name: Docker login via OIDC
+        run: jf docker-login ${{ env.REGISTRY }}
 
       - name: Scan Dependencies for Vulnerabilities
         run: |
@@ -59,10 +60,12 @@ jobs:
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           docker push $IMAGE_TAG
+
       - name: Publish Build Info
         run: |
           jf rt build-add-git ${{ matrix.dockerfile }}-app ${{ github.run_number }}
           jf rt build-publish ${{ matrix.dockerfile }}-app ${{ github.run_number }}
+
       - name: Scan with JFrog Xray
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
@@ -74,15 +77,17 @@ jobs:
     if: github.event_name == 'push'
     needs: [build-and-scan]
     permissions:
+      id-token: write
       contents: read
 
     steps:
-      - name: Setup JFrog CLI
+      - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
         env:
           JF_URL: https://${{ env.REGISTRY }}
-          JF_USER: ${{ secrets.JFROG_USERNAME }}
-          JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+        with:
+          oidc-provider-name: gc-secure-artifacts
+          oidc-audience: https://github.com/gccloudone
 
       - name: Cleanup Old Images (Cost Savings)
         run: |
@@ -100,6 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     permissions:
+      id-token: write
       contents: read
       pull-requests: write
       security-events: write
@@ -108,22 +114,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Frogbot
+      - name: Run Frogbot with OIDC
         uses: jfrog/frogbot@v2
         env:
           JF_URL: https://${{ env.REGISTRY }}
-          JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
           JF_ENABLE_SAST: "true"
           JF_ENABLE_SECRETS: "true"
           JF_ENABLE_IAC: "true"
+          JF_OIDC_PROVIDER_NAME: gc-secure-artifacts
+          JF_OIDC_AUDIENCE: https://github.com/gccloudone
 
   summary:
     needs: [build-and-scan, cleanup]
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'push'
+    permissions:
+      contents: read
 
     steps:
       - name: Build Summary
@@ -138,3 +147,4 @@ jobs:
           echo "- Automated Cleanup: Checked for old images to save storage costs" >> $GITHUB_STEP_SUMMARY
           echo "- Frogbot: Automated security comments on pull requests" >> $GITHUB_STEP_SUMMARY
           echo "- Image Scanning: JFrog Xray scanned container images" >> $GITHUB_STEP_SUMMARY
+          echo "- OIDC Authentication: Secure credential-less authentication" >> $GITHUB_STEP_SUMMARY
