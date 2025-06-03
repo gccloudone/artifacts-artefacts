@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "Scanning dependencies for security issues..."
           cd examples/python-app
-          jf audit --format=table || echo "Issues found - check output above"
+          jf audit --format=table --project=ssc-aurora || echo "Issues found - check output above"
           echo ""
           echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 
@@ -77,7 +77,7 @@ jobs:
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           echo "Scanning ${{ matrix.dockerfile }} image..."
-          jf docker scan $IMAGE_TAG || echo "Scan completed with issues - check output above"
+          jf docker scan $IMAGE_TAG --project=ssc-aurora || echo "Scan completed with issues - check output above"
 
   cleanup:
     runs-on: ubuntu-latest
