@@ -29,6 +29,12 @@ For further insight into the GC Secure Artifacts initiative, below is an present
 
 - [GC Secure Artifacts Presentation](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/gc-secure-artifacts.pptx)
 
+
+## Github Public Adoption
+<img src="stats/usage.png" alt="Usage Over Time" style="width: 100%;" />
+
+As the days go by, you can see how the count evolves… here is our github public adoption(Search Results).
+
 ## Features
 
 ### JFrog Platform
