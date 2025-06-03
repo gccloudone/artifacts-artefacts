@@ -22,7 +22,7 @@ df["just_date"] = df["date"].dt.date
 title = os.getenv("CHART_TITLE", "Usage Over Time")
 
 # Create figure + axis
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(12, 6))
 
 # Plot using the “just_date” column
 ax.plot(df["just_date"], df["count"], marker="o")
