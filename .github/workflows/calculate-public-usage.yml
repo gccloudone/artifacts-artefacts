@@ -1,52 +1,29 @@
 name: Calculate Usage
 
 on:
-  schedule:
-    - cron: '0 4 * * *'   # daily at 04:00 UTC
   workflow_dispatch:
 
 jobs:
-  count-and-chart:
+  count_repos:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install npm dependencies
-        run: |
-          npm install chartjs-node-canvas fs-extra
-
-      - name: Fetch and record count (pure Bash + jq)
-        id: query
+      - name: Count unique repos referencing JF_URL
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SEARCH_STRING='JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca'
-          # URL‑encode the snippet
-          QUERY=$(printf '%s' "$SEARCH_STRING" | jq -s -R -r @uri)
+          # Capture current date in YYYY-MM-DD format
+          current_date=$(date -u +%Y-%m-%d)
 
-          PAGE=1
-          rm -f all_repos.txt
-          touch all_repos.txt
+          # Run the GitHub Code Search API, extract repo names, dedupe, and count
+          count=$(
+            curl -sSL \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/search/code?q=%22JF_URL%3A+https%3A%2F%2Fartifacts-artefacts.devops.cloud-nuage.canada.ca%22+language%3AYAML+path%3A.github%2Fworkflows%2F" \
+            | jq -r '.items[].repository.full_name' \
+            | sort -u \
+            | wc -l
+          )
 
-          while :; do
-            RESPONSE=$(curl -s \
-              -H "Accept: application/vnd.github.v3+json" \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/search/code?q=$QUERY+path:.github/workflows+extension:ya?ml&per_page=100&page=$PAGE")
-
-            echo "$RESPONSE" \
-              | jq -r '.items[]?.repository.full_name' \
-              >> all_repos.txt
-
-            COUNT_PAGE=$(echo "$RESPONSE" | jq '.items | length')
-            if [ "$COUNT_PAGE" -lt 100 ]; then
-              break
-            fi
-            ((PAGE++))
-          done
-
+          echo "Date: $current_date"
+          echo "Unique repos found: $count"
