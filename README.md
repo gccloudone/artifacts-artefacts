@@ -15,7 +15,7 @@ For access to GC Secure Artifacts, please completing the following GC Form:
 <!-- prettier-ignore-start -->
 | Security Control | Continual Validation Status |
 |---|---|
-|SD-3|[![Code Linting](../../actions/workflows/super-linter.yml/badge.svg)](../../actions/workflows/super-linter.yml)|
+|SD-3|[![Code Linting](../../actions/workflows/cc-code-scanning.yml/badge.svg)](../../actions/workflows/cc-code-scanning.yml)|
 <!-- prettier-ignore-end -->
 
 ## Build Statuses

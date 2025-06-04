@@ -1,0 +1,40 @@
+---
+name: Code Linting
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Scan Code
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write # To report GitHub Actions status checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint Codebase
+        uses: super-linter/super-linter/slim@v7.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # To report GitHub Actions status checks
+          VALIDATE_ALL_CODEBASE: true # Lint only changed files
+          SUPPRESS_POSSUM: true
+          LINTER_RULES_PATH: /
+          IGNORE_GITIGNORED_FILES: true
+          NATURAL_LANGUAGE_CONFIG_FILE: '.textlintrc.json'
+          PYTHON_BLACK_CONFIG_FILE: 'pyproject.toml'
+          PYTHON_ISORT_CONFIG_FILE: 'pyproject.toml'
+          PYTHON_RUFF_CONFIG_FILE: 'pyproject.toml'
+          PYTHON_PYINK_CONFIG_FILE: 'pyproject.toml'
+          VALIDATE_PYTHON_PYINK: false
