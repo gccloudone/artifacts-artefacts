@@ -1,24 +1,5 @@
 # GC Secure Artifacts
 
-## Continual Compliance Report
-
-| Control|Continual Validation|
-|---|---|
-|SD-3|[![Code Linting](../../actions/workflows/super-linter.yml/badge.svg)](../../actions/workflows/super-linter.yml)|
-
-
-[![Code Linting](../../workflows/super-linter.yml/badge.svg)]
-(../../workflows/super-linter.yml)
-
-[![Code Linting](https://github.com/KingBain/artifacts-artefacts/actions/workflows/super-linter.yml/badge.svg)](https://github.com/KingBain/artifacts-artefacts/actions/workflows/super-linter.yml)
-
-
-![](../../workflows/<workflowname>/badge.svg)
-
-![Java](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/java-app.yml/badge.svg)
-![Python](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/python-app.yml/badge.svg)
-![Node.js](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/node-app.yml/badge.svg)
-
 Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secure Artifacts](https://artifacts-artefacts.devops.cloud-nuage.canada.ca), a secure, scalable, centralized artifact management service underpinned by the JFrog Enterprise+ platform, self-hosted on the GC Private Cloud.
 
 - https://artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -28,6 +9,18 @@ Available to all federal departments and agencies, this service represents SSC's
 For access to GC Secure Artifacts, please completing the following GC Form:
 
 - [GC Secure Artifacts Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmavw8p4l006eyi01cx1qtxxd)
+
+## Continual Compliance Report
+
+| Control|Continual Validation|
+|---|---|
+|SD-3|[![Code Linting](../../actions/workflows/super-linter.yml/badge.svg)](../../actions/workflows/super-linter.yml)|
+
+## Build Statuses
+
+![Java](../../actions/workflows/java-app.yml/badge.svg)
+![Python](../../actions/workflows/python-app.yml/badge.svg)
+![Node.js](../../actions/workflows/node-app.yml/badge.svg)
 
 ## Background
 
