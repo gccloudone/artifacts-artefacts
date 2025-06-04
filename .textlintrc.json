@@ -1,4 +1,5 @@
 {
+  "plugins": {},
   "filters": {},
   "rules": {
     "common-misspellings": {
