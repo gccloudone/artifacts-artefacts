@@ -3,6 +3,7 @@
 ## Continual Compliance Report
 
 | Control|Continual Validation|
+|---|---|
 |SD-3 DEVELOPER SECURITY TESTING|[![Code Linting](actions/workflows/super-linter.yml/badge.svg)](actions/workflows/super-linter.yml)|
 
 
