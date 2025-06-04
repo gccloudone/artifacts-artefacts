@@ -1,7 +1,9 @@
 {
   "rules": {
     "terminology": {
-      "exclude": ["NPM", "Life Cycle"]
+      "defaultTerms": false,
+      "skip": ["Link"],
+      "terms": ["NPM", "Life Cycle"]
     }
   }
 }
