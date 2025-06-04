@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Lint Incoming Changes
-        uses: super-linter/super-linter/slim@85f7611e0f7b53c8573cca84aa0ed4344f6f6a4d # v7.2.1
+        uses: super-linter/super-linter/slim@v7.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # To report GitHub Actions status checks
           VALIDATE_ALL_CODEBASE: false # Lint only changed files
