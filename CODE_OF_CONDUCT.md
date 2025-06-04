@@ -6,7 +6,7 @@ Shared Services Canada follows the [CNCF Code of Conduct](https://github.com/cnc
 
 Please review before contributing issues, pull requests, or joining the GitHub organization.
 
-______________________
+---
 
 ## Code de conduite
 

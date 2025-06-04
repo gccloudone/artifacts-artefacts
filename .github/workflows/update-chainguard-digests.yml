@@ -3,7 +3,7 @@ name: Update Chainguard Digests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: '0 0 * * 0'
 
 jobs:
   update-digests:
@@ -66,8 +66,8 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update Chainguard image digests"
-          title: "Update Chainguard image digests"
+          commit-message: 'Update Chainguard image digests'
+          title: 'Update Chainguard image digests'
           body: |
             Automated update of Chainguard base images to latest digests.
 

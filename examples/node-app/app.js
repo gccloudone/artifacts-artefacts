@@ -1,13 +1,13 @@
 const http = require('http');
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200, {'Content-Type': 'application/json'});
+  res.writeHead(200, { 'Content-Type': 'application/json' });
 
   const response = {
     status: 'healthy',
     service: 'node-api',
     nodeVersion: process.version,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   res.end(JSON.stringify(response));

@@ -12,11 +12,13 @@
 Replace your current base image with a Chainguard equivalent:
 
 **Before:**
+
 ```dockerfile
 FROM python:3.13-slim
 ```
 
 **After:**
+
 ```dockerfile
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
 ```
@@ -35,6 +37,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 ## Step 3: Add Security Scanning
 
 **Scan Dependencies:**
+
 ```yaml
 - name: Scan Dependencies
   run: |
@@ -44,6 +47,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 ```
 
 **Scan Container Images:**
+
 ```yaml
 - name: Scan Container
   run: |
@@ -65,13 +69,13 @@ frogbot:
     pull-requests: write
     security-events: write
   steps:
-  - uses: actions/checkout@v4
-  - uses: jfrog/frogbot@v2
-    env:
-      JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-      JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
-      JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
+    - uses: actions/checkout@v4
+    - uses: jfrog/frogbot@v2
+      env:
+        JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+        JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        JF_GIT_USE_GITHUB_ENVIRONMENT: 'false'
 ```
 
 ## Step 5: Add Cost Management
@@ -84,17 +88,17 @@ cleanup:
   if: github.event_name == 'push'
   needs: [build-and-scan]
   steps:
-  - name: Setup JFrog CLI
-    uses: jfrog/setup-jfrog-cli@v4
-    env:
-      JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-      JF_USER: ${{ secrets.JFROG_USERNAME }}
-      JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
-  - name: Cleanup Analysis
-    run: |
-      echo "Running automated cleanup to save storage costs..."
-      CLEANUP_COUNT=$(jf rt search "repo-name/*" --older-than=30d --count 2>/dev/null || echo "0")
-      echo "Found $CLEANUP_COUNT old images that could be cleaned up"
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      env:
+        JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
+        JF_USER: ${{ secrets.JFROG_USERNAME }}
+        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+    - name: Cleanup Analysis
+      run: |
+        echo "Running automated cleanup to save storage costs..."
+        CLEANUP_COUNT=$(jf rt search "repo-name/*" --older-than=30d --count 2>/dev/null || echo "0")
+        echo "Found $CLEANUP_COUNT old images that could be cleaned up"
 ```
 
 ## Step 6: Push to JFrog Registry
@@ -117,6 +121,7 @@ cleanup:
 Use these image paths in your Dockerfiles:
 
 **Java:**
+
 ```dockerfile
 # JDK for building
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21
@@ -126,11 +131,13 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 ```
 
 **Python:**
+
 ```dockerfile
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
 ```
 
 **Node.js:**
+
 ```dockerfile
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0
 ```
@@ -144,7 +151,7 @@ name: Update Chainguard Digests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: '0 0 * * 0'
 jobs:
   update-digests:
     runs-on: ubuntu-latest
@@ -152,19 +159,20 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup JFrog CLI
-      uses: jfrog/setup-jfrog-cli@v4
-      env:
-        JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-        JF_USER: ${{ secrets.JFROG_USERNAME }}
-        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+      - uses: actions/checkout@v4
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
+          JF_USER: ${{ secrets.JFROG_USERNAME }}
+          JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
     # Automatically updates Dockerfiles with latest secure digests
 ```
 
 ## Local Development
 
 **Install JFrog CLI:**
+
 ```bash
 # Configure CLI
 jf config add --url=https://artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -180,6 +188,7 @@ jf audit --fix
 ```
 
 **Pull Chainguard Images:**
+
 ```bash
 # Login
 docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -208,6 +217,7 @@ git push origin main
 ## What You'll See
 
 **JFrog CLI Output:**
+
 ```
 Scanning dependencies for security issues...
 No issues found
@@ -215,6 +225,7 @@ Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities
 ```
 
 **Container Scan Results:**
+
 ```
 Scanning chainguard image...
 No vulnerable components were found
@@ -222,6 +233,7 @@ Scan completed successfully
 ```
 
 **Cost Management:**
+
 ```
 Running automated cleanup to save storage costs...
 Found 0 old images that could be cleaned up
@@ -229,6 +241,7 @@ Cleanup saves storage costs and improves performance
 ```
 
 **Build Summary:**
+
 ```
 Build 42 completed
 
@@ -244,6 +257,7 @@ JFrog Developer Tools Used:
 ## Common Commands
 
 **Dependency Scanning:**
+
 ```bash
 jf audit                    # Scan dependencies
 jf audit --fix             # Get fix suggestions
@@ -251,12 +265,14 @@ jf audit --format=json     # JSON output
 ```
 
 **Container Operations:**
+
 ```bash
 jf docker scan image:tag   # Scan container
 jf docker push image:tag   # Push to registry
 ```
 
 **Repository Management:**
+
 ```bash
 jf rt search "repo/*"                    # Search artifacts
 jf rt delete "repo/*" --older-than=30d   # Clean old artifacts
@@ -265,6 +281,7 @@ jf rt delete "repo/*" --older-than=30d   # Clean old artifacts
 ## Implementation Options
 
 **Single Dockerfile Approach:**
+
 ```yaml
 - name: Build image
   run: |
@@ -273,18 +290,19 @@ jf rt delete "repo/*" --older-than=30d   # Clean old artifacts
 ```
 
 **Multiple Variants (Optional):**
+
 ```yaml
 strategy:
   matrix:
     dockerfile: [standard, chainguard]
 steps:
-- name: Build image
-  run: |
-    IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-    docker build -f Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG .
+  - name: Build image
+    run: |
+      IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+      docker build -f Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG .
 ```
 
-*Note: Matrix strategy is demonstrated in this repository but optional for your implementation.*
+_Note: Matrix strategy is demonstrated in this repository but optional for your implementation._
 
 ## Support
 

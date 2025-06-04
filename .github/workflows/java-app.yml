@@ -5,13 +5,13 @@ on:
   push:
     branches: [main]
     paths:
-      - "examples/java-app/**"
-      - ".github/workflows/**"
+      - 'examples/java-app/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [main]
     paths:
-      - "examples/java-app/**"
-      - ".github/workflows/**"
+      - 'examples/java-app/**'
+      - '.github/workflows/**'
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
@@ -117,11 +117,11 @@ jobs:
           JF_URL: https://${{ env.REGISTRY }}
           JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
-          JF_INCLUDE_ALL_VULNERABILITIES: "true"
-          JF_ENABLE_SAST: "true"
-          JF_ENABLE_SECRETS: "true"
-          JF_ENABLE_IAC: "true"
+          JF_GIT_USE_GITHUB_ENVIRONMENT: 'false'
+          JF_INCLUDE_ALL_VULNERABILITIES: 'true'
+          JF_ENABLE_SAST: 'true'
+          JF_ENABLE_SECRETS: 'true'
+          JF_ENABLE_IAC: 'true'
   summary:
     needs: [build-and-scan, cleanup]
     runs-on: ubuntu-latest

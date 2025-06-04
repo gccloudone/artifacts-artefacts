@@ -1,16 +1,16 @@
 # Directories should be scanned for vulnerabilities
 projects:
-  - workingDirectory: "examples/java-app"
-    tool: "gradle"
-  - workingDirectory: "examples/python-app"
-    tool: "pip"
-  - workingDirectory: "examples/node-app"
-    tool: "npm"
+  - workingDirectory: 'examples/java-app'
+    tool: 'gradle'
+  - workingDirectory: 'examples/python-app'
+    tool: 'pip'
+  - workingDirectory: 'examples/node-app'
+    tool: 'npm'
 
 # Exclude root directory scanning since it's not an application
 excludeDirectories:
-  - "scripts/"
-  - "stats/"
-  - "venvdir/"
-  - ".github/"
-  - "docs/"
+  - 'scripts/'
+  - 'stats/'
+  - 'venvdir/'
+  - '.github/'
+  - 'docs/'
