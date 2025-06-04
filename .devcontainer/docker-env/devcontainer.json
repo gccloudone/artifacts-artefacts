@@ -15,6 +15,7 @@
       "installDockerComposeSwitch": true,
       "version": "latest",
       "dockerDashComposeVersion": "v2"
-    }
+    },
+    "ghcr.io/devcontainers-extra/features/shfmt:1": {}
   }
 }

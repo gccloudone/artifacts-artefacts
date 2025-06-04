@@ -1,5 +1,5 @@
 {
-  "name": "JF cli, docker, linting",
+  "name": "JF cli, Go, linting",
   "image": "mcr.microsoft.com/devcontainers/base:jammy",
   "features": {
     "ghcr.io/devcontainers-extra/features/jfrog-cli:1": {
