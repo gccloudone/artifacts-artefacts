@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "terminology": {
+      "skip": ["NPM", "Life Cycle"]
+    }
+  }
+}
