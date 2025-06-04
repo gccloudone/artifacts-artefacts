@@ -1,11 +1,7 @@
 {
-  "plugins": {},
-  "filters": {},
   "rules": {
     "terminology": {
-      "defaultTerms": false,
-      "skip": ["Blockquote"],
-      "terms": ["Life Cycle", "NPM"]
+      "exclude": ["NPM", "Life Cycle"]
     }
   }
 }
