@@ -1,5 +1,5 @@
 ---
-name: Code Linting
+name: Compliance Code Linting
 
 on:
   workflow_dispatch:
