@@ -2,7 +2,7 @@
   "rules": {
     "terminology": {
       "defaultTerms": false,
-      "skip": ["Link"],
+      "skip": ["Link", "Blockquote"],
       "terms": ["NPM", "Life Cycle"]
     }
   }
