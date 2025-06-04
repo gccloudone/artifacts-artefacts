@@ -7,6 +7,9 @@
 |SD-3|[![Code Linting](actions/workflows/super-linter.yml/badge.svg)](actions/workflows/super-linter.yml)|
 
 
+[![Code Linting](actions/workflows/super-linter.yml/badge.svg)]
+(actions/workflows/super-linter.yml)
+
 ![Java](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/java-app.yml/badge.svg)
 ![Python](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/python-app.yml/badge.svg)
 ![Node.js](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/node-app.yml/badge.svg)
