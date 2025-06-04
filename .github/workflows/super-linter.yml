@@ -1,0 +1,34 @@
+---
+name: Code Linting
+
+on:
+  push: {}
+  pull_request: {}
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Scan Code
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write # To report GitHub Actions status checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint Incoming Changes
+        uses: super-linter/super-linter/slim@85f7611e0f7b53c8573cca84aa0ed4344f6f6a4d # v7.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # To report GitHub Actions status checks
+          VALIDATE_ALL_CODEBASE: false # Lint only changed files
+          VALIDATE_CHECKOV: false
+          VALIDATE_JSCPD: false
+          SUPPRESS_POSSUM: true

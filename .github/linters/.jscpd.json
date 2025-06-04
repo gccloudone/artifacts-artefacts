@@ -1,0 +1,6 @@
+{
+  "threshold": 10.0,
+  "reporters": ["console"],
+  "absolute": true,
+  "blame": true
+}
