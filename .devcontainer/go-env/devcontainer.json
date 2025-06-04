@@ -1,0 +1,16 @@
+{
+  "name": "JF cli, docker, linting",
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/jfrog-cli:1": {
+        "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {
+      "version": "latest"
+    }
+  },
+  "postCreateCommand": "go install mvdan.cc/sh/v3/cmd/shfmt@latest"
+}
