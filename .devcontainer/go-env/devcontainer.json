@@ -10,7 +10,9 @@
     },
     "ghcr.io/devcontainers-community/npm-features/prettier:1": {
       "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/shfmt:1": {
+      "version": "latest"
     }
-  },
-  "postCreateCommand": "go install mvdan.cc/sh/v3/cmd/shfmt@latest"
+  }
 }
