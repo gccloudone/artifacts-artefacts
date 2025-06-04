@@ -1,7 +1,7 @@
 {
   "rules": {
     "terminology": {
-      "skip": ["NPM", "Life Cycle"]
+      "exclude": ["lifecycle", "npm"]
     }
   }
 }
