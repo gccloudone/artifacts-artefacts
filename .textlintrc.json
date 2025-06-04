@@ -2,9 +2,6 @@
   "plugins": {},
   "filters": {},
   "rules": {
-    "common-misspellings": {
-      "ignore": []
-    },
     "terminology": {
       "defaultTerms": false,
       "skip": ["Blockquote"],
