@@ -39,8 +39,8 @@ For further insight into the GC Secure Artifacts initiative, below is an present
 
 - [GC Secure Artifacts Presentation](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/gc-secure-artifacts.pptx)
 
-
 ## GitHub Public Adoption
+
 <img src="stats/usage.png" alt="Usage Over Time" style="width: 100%;" />
 
 As the days go by, you can see how the count evolves… here is our GitHub public adoption(Search Results).
@@ -53,10 +53,10 @@ JFrog Platform (Enterprise Plus) offers an enterprise-grade solution for publish
 
 The platform provides:
 
-* A centralized registry for internal builds and deployments
-* Advanced access controls and repository segmentation
-* Built-in vulnerability scanning (via JFrog Xray)
-* Support for multiple package types (Docker, Maven, NPM, Nuget, Helm, etc.)
+- A centralized registry for internal builds and deployments
+- Advanced access controls and repository segmentation
+- Built-in vulnerability scanning (via JFrog Xray)
+- Support for multiple package types (Docker, Maven, NPM, Nuget, Helm, etc.)
 
 ### Chainguard Secure Images
 
@@ -66,13 +66,13 @@ These images have been set up as a pull through from Chainguard's registry to ou
 
 The container images which are available:
 
-* Python
-* OpenJDK (JDK & JRE)
-* PowerShell
-* Node.js
-* ASP.NET Runtime
-* .NET Runtime
-* .NET SDK
+- Python
+- OpenJDK (JDK & JRE)
+- PowerShell
+- Node.js
+- ASP.NET Runtime
+- .NET Runtime
+- .NET SDK
 
 ## Implementation Examples
 
@@ -81,6 +81,7 @@ This repository includes practical examples demonstrating how to integrate JFrog
 ### Quick Start
 
 **Replace standard base images with Chainguard equivalents:**
+
 ```dockerfile
 # Python
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
@@ -93,6 +94,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 ```
 
 **Add JFrog CLI to your GitHub Actions:**
+
 ```yaml
 - name: Setup JFrog CLI
   uses: jfrog/setup-jfrog-cli@v4
@@ -103,6 +105,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 ```
 
 **Enable security scanning:**
+
 ```yaml
 - name: Scan Dependencies
   run: jf audit --format=simple
@@ -124,6 +127,7 @@ examples/
 ```
 
 Each example demonstrates:
+
 - JFrog CLI dependency scanning
 - Chainguard image integration
 - Container vulnerability scanning
@@ -133,12 +137,14 @@ Each example demonstrates:
 ### Repository Setup
 
 Configure these secrets in your GitHub repository:
+
 - `JFROG_USERNAME`: Your Artifactory username
 - `JFROG_JWT_TOKEN`: Your Artifactory access token
 
 ### Local Development
 
 **Configure JFrog CLI:**
+
 ```bash
 jf config add --url=https://artifacts-artefacts.devops.cloud-nuage.canada.ca
 jf rt ping
@@ -146,6 +152,7 @@ jf audit
 ```
 
 **Access Chainguard Images:**
+
 ```bash
 docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
 docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
@@ -168,6 +175,6 @@ Feel free to share your feedback by emailing us at [devops.artifacts-artefacts.d
 
 ## Resources
 
-* [Chainguard](https://chainguard.dev/)
-* [JFrog Devops Platform](https://jfrog.com/)
-* [jFrog Academy](https://academy.jfrog.com/)
+- [Chainguard](https://chainguard.dev/)
+- [JFrog Devops Platform](https://jfrog.com/)
+- [jFrog Academy](https://academy.jfrog.com/)
