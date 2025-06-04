@@ -4,7 +4,7 @@
 
 | Control|Continual Validation|
 |---|---|
-|SD-3 DEVELOPER SECURITY TESTING|[![Code Linting](actions/workflows/super-linter.yml/badge.svg)](actions/workflows/super-linter.yml)|
+|SD-3|[![Code Linting](actions/workflows/super-linter.yml/badge.svg)](actions/workflows/super-linter.yml)|
 
 
 ![Java](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/java-app.yml/badge.svg)
