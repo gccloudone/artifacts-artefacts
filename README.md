@@ -7,11 +7,13 @@
 |SD-3|[![Code Linting](actions/workflows/super-linter.yml/badge.svg)](actions/workflows/super-linter.yml)|
 
 
-[![Code Linting](actions/workflows/super-linter.yml/badge.svg)]
-(actions/workflows/super-linter.yml)
+[![Code Linting](../../workflows/super-linter.yml/badge.svg)]
+(../../workflows/super-linter.yml)
 
 [![Code Linting](https://github.com/KingBain/artifacts-artefacts/actions/workflows/super-linter.yml/badge.svg)](https://github.com/KingBain/artifacts-artefacts/actions/workflows/super-linter.yml)
 
+
+![](../../workflows/<workflowname>/badge.svg)
 
 ![Java](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/java-app.yml/badge.svg)
 ![Python](https://github.com/gccloudone/artifacts-artefacts/actions/workflows/python-app.yml/badge.svg)
