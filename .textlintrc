@@ -3,7 +3,7 @@
     "terminology": {
       "defaultTerms": false,
       "skip": ["Link", "Blockquote"],
-      "terms": ["NPM", "Life Cycle"]
+      "terms": ["NPM", "npm", "Life Cycle"]
     }
   }
 }
