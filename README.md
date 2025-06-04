@@ -12,9 +12,11 @@ For access to GC Secure Artifacts, please completing the following GC Form:
 
 ## Continual Compliance Report
 
+<!-- prettier-ignore-start -->
 | Security Control | Continual Validation Status |
 |---|---|
 |SD-3|[![Code Linting](../../actions/workflows/super-linter.yml/badge.svg)](../../actions/workflows/super-linter.yml)|
+<!-- prettier-ignore-end -->
 
 ## Build Statuses
 
