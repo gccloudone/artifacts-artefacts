@@ -4,7 +4,7 @@
 
 | Control|Continual Validation|
 |---|---|
-|SD-3|[![Code Linting](actions/workflows/super-linter.yml/badge.svg)](actions/workflows/super-linter.yml)|
+|SD-3|[![Code Linting](../../actions/workflows/super-linter.yml/badge.svg)](../../actions/workflows/super-linter.yml)|
 
 
 [![Code Linting](../../workflows/super-linter.yml/badge.svg)]
