@@ -10,7 +10,7 @@ permissions: read-all
 
 jobs:
   build:
-    name: Scan Code
+    name: Incoming Scan Code
     runs-on: ubuntu-latest
 
     permissions:
