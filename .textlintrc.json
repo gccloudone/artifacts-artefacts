@@ -1,0 +1,32 @@
+{
+  "plugins": {},
+  "filters": {},
+  "rules": {
+    "date-weekday-mismatch": true,
+    "footnote-order": true,
+    "no-curly-quotes": true,
+    "no-todo": false,
+    "period-in-header": true,
+    "editorconfig": true,
+    "spelling": {
+      "language": "en",
+      "skipPatterns": [
+        "(http|https)://[^\\s]+",
+        "\\[.*?\\]\\([^)]+\\)",
+        "/repos/g",
+        "JavaScript",
+        "TypeScript",
+        "GitHub",
+        "ESLint",
+        "npm",
+        "Node\\.js",
+        "JSDoc",
+        "VisualStudioCode",
+        "SemVer"
+      ],
+      "wordDefinitionRegexp": "/[\\w']+/g",
+      "suggestCorrections": true
+    },
+    "terminology": true
+  }
+}
