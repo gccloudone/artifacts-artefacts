@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "terminology": {
+      "defaultTerms": true,
+      "terms": ["Software Development Life Cycle", "Life Cycle", "NPM"]
+    }
+  }
+}

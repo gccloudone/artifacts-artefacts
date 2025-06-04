@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "terminology": {
-      "allow": ["Software Development Life Cycle", "Life Cycle", "NPM"]
-    }
-  }
-}
