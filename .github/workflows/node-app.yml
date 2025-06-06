@@ -1,6 +1,7 @@
 name: Simple Node.js Build and Security Scan
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
