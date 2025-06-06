@@ -1,0 +1,15 @@
+{
+  "name": "JF cli, Python, linting",
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/jfrog-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/shfmt:1": {
+      "version": "latest"
+    }
+  }
+}
