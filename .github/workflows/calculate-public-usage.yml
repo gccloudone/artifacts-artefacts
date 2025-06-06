@@ -18,8 +18,8 @@ jobs:
         id: create_token
         uses: actions/create-github-app-token@3ff1caaa28b64c9cc276ce0a02e2ff584f3900c5 # v2
         with:
-          app-id: ${{ vars.artifacts_artefacts_sre_id }}
-          private-key: ${{ secrets.artifacts_artefacts_sre_key }}
+          app-id: ${{ vars.ARTIFACTS_ARTEFACTS_CODE_BOT_ID }}
+          private-key: ${{ secrets.ARTIFACTS_ARTEFACTS_CODE_BOT_KEY }}
           owner: ${{ github.repository_owner }}
 
       - name: Check out repository
@@ -82,7 +82,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git config --global user.name "Artifacts-Artefacts SRE"
-            git config --global user.email "<${{ vars.artifacts_artefacts_sre_id }}+Artifacts-Artefacts SRE[bot]@users.noreply.github.com>"
+            git config --global user.email "<${{ vars.ARTIFACTS_ARTEFACTS_CODE_BOT_ID }}+Artifacts-Artefacts Code[bot]@users.noreply.github.com>"
             git add stats/usage.csv stats/usage.png
             git commit -m "Add usage for $(date -u +%Y-%m-%d): ${{ steps.count_repos.outputs.count }}"
             git push
