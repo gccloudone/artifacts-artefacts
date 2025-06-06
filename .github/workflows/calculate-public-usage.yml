@@ -82,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.create_token.outputs.token }}
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            git config --global user.name "Artifacts-Artefacts SRE"
+            git config --global user.name "🤖 Artifacts-Artefacts Code Bot"
             git config --global user.email "<${{ vars.ARTIFACTS_ARTEFACTS_CODE_BOT_ID }}+Artifacts-Artefacts Code[bot]@users.noreply.github.com>"
             git add stats/usage.csv stats/usage.png
             git commit -m "Add usage for $(date -u +%Y-%m-%d): ${{ steps.count_repos.outputs.count }}"
