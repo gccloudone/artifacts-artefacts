@@ -19,8 +19,9 @@ jobs:
         with:
           app-id: ${{ vars.ARTIFACTS_ARTEFACTS_CODE_BOT_ID }}
           private-key: ${{ secrets.ARTIFACTS_ARTEFACTS_CODE_BOT_KEY }}
+          owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
-          permission-content: write
+          permission-contents: write
 
       - name: Check out repository
         uses: actions/checkout@v4
