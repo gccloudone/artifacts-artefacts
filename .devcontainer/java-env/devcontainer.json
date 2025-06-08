@@ -10,15 +10,26 @@
       "version": "latest",
       "jdkDistro": "open",
       "gradleVersion": "latest",
-      "mavenVersion": "latest",
+      "mavenVersion": "3.9.10",
       "antVersion": "latest",
       "groovyVersion": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "latest"
     },
     "ghcr.io/devcontainers-community/npm-features/prettier:1": {
       "version": "latest"
     },
     "ghcr.io/devcontainers-extra/features/shfmt:1": {
       "version": "latest"
+    }
+  },
+  "postCreateCommand": "npm install -g google-java-format",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "wx-chevalier.google-java-format"
+      ]
     }
   }
 }
