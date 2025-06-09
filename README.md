@@ -10,7 +10,7 @@ Shared Services Canada (SSC) has initiated a one-year pilot project of [GC Secur
 
 Available to all federal departments and agencies, this service represents SSC's initial venture into a unified DevSecOps service, designed to bolster software supply chain security and expedite delivery across the Government of Canada. Outcomes of this pioneering initiative will contribute to the decision-making process regarding the project's long-term sustainability and potential expansion.
 
-For access to GC Secure Artifacts, please completing the following GC Form:
+For access to GC Secure Artifacts, please complete the following GC Form:
 
 - [GC Secure Artifacts Onboarding Form](https://forms-formulaires.alpha.canada.ca/en/id/cmavw8p4l006eyi01cx1qtxxd)
 
