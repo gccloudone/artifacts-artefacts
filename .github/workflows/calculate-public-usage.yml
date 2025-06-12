@@ -6,22 +6,32 @@ on:
     - cron: '0 3 * * *'
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: read-all
 
 jobs:
   count_repos:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Create App token
+        id: create_token
+        uses: actions/create-github-app-token@3ff1caaa28b64c9cc276ce0a02e2ff584f3900c5 # v2
+        with:
+          app-id: ${{ vars.ARTIFACTS_ARTEFACTS_CODE_BOT_ID }}
+          private-key: ${{ secrets.ARTIFACTS_ARTEFACTS_CODE_BOT_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          token: ${{ steps.create_token.outputs.token }}
+          ref: ${{ github.ref_name }}
 
       - name: Count unique repos referencing JF_URL
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.create_token.outputs.token }}
         run: |
           # Capture current date in YYYY-MM-DD (UTC)
           current_date=$(date -u +%Y-%m-%d)
@@ -67,17 +77,16 @@ jobs:
         run: |
           python3 scripts/generate_graph.py
 
-      - name: Commit and push updated data file + graph
+      - name: Commit and Push Changes
+        env:
+          GITHUB_TOKEN: ${{ steps.create_token.outputs.token }}
         run: |
-          # Configure git author
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Stage CSV and PNG
-          git add stats/usage.csv stats/usage.png
-
-          # Commit changes if there are any
-          git commit -m "Add usage for $(date -u +%Y-%m-%d): ${{ steps.count_repos.outputs.count }}" || echo "No changes to commit"
-
-          # Push back to the default branch
-          git push
+          if [ -n "$(git status --porcelain)" ]; then
+            git config --global user.name "🤖 Artifacts-Artefacts Code Bot"
+            git config --global user.email "<${{ vars.ARTIFACTS_ARTEFACTS_CODE_BOT_ID }}+Artifacts-Artefacts Code[bot]@users.noreply.github.com>"
+            git add stats/usage.csv stats/usage.png
+            git commit -m "Add usage for $(date -u +%Y-%m-%d): ${{ steps.count_repos.outputs.count }}"
+            git push
+          else
+            echo "No changes to commit."
+          fi
