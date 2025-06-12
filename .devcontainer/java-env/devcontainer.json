@@ -1,0 +1,36 @@
+{
+  "name": "JF cli, JDK, linting",
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/jfrog-cli:1": {},
+    "ghcr.io/devcontainers/features/java:1": {
+      "installGradle": true,
+      "installMaven": true,
+      "installAnt": true,
+      "version": "latest",
+      "jdkDistro": "open",
+      "gradleVersion": "latest",
+      "mavenVersion": "3.9.10",
+      "antVersion": "latest",
+      "groovyVersion": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/shfmt:1": {
+      "version": "latest"
+    }
+  },
+  "postCreateCommand": "npm install -g google-java-format",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "wx-chevalier.google-java-format"
+      ]
+    }
+  }
+}
+
