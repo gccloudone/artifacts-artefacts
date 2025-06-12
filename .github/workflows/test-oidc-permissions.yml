@@ -1,6 +1,8 @@
 name: Test OIDC Permissions
 
 on:
+  push:
+    branches: [feat/jfrog-oidc]
   workflow_dispatch:
 
 env:
