@@ -1,0 +1,59 @@
+name: Test OIDC Permissions
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
+
+jobs:
+  test-oidc:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@v4
+        id: setup-jfrog-cli
+        env:
+          JF_URL: https://${{ env.REGISTRY }}
+          JF_PROJECT: ssc-aurora
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+        with:
+          oidc-provider-name: github-oidc
+          version: 2.76.1
+
+      - name: Test Basic JFrog Connection
+        run: |
+          echo "Testing basic JFrog connection..."
+          jf rt ping
+
+      - name: Test Xray Entitlements
+        run: |
+          echo "Testing Xray contextual analysis entitlements..."
+
+          # Test the specific endpoint JFrog Support mentioned
+          RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+            -H "Authorization: Bearer ${{ steps.setup-jfrog-cli.outputs.oidc-token }}" \
+            https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis)
+
+          echo "Response: $RESPONSE"
+
+          # Check if successful
+          if echo "$RESPONSE" | grep -q "HTTP_CODE:200"; then
+            echo "SUCCESS: Xray entitlements accessible"
+          else
+            echo "FAILED: Insufficient permissions for Xray contextual analysis"
+            echo "This confirms you need to update your OIDC identity mapping permissions"
+          fi
+
+      - name: Test Simple Scan (if entitlements work)
+        run: |
+          echo "Attempting a simple audit scan..."
+          cd examples/python-app
+          jf audit --format=table --project=ssc-aurora || echo "Scan failed - likely due to permissions"
