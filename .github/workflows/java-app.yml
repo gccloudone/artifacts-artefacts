@@ -1,4 +1,5 @@
-name: java-app
+
+name: Simple Java Build and Security Scan
 
 on:
   workflow_dispatch:
@@ -6,12 +7,12 @@ on:
     branches: [main]
     paths:
       - "examples/java-app/**"
-      - ".github/workflows/**"
+      - ".github/workflows/java-app.yml"
   pull_request:
     branches: [main]
     paths:
       - "examples/java-app/**"
-      - ".github/workflows/**"
+      - ".github/workflows/java-app.yml"
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca

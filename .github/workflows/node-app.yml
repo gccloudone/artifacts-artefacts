@@ -1,4 +1,4 @@
-name: node-app
+name: Simple Node.js Build and Security Scan
 
 on:
   workflow_dispatch:
@@ -6,13 +6,12 @@ on:
     branches: [main]
     paths:
       - "examples/node-app/**"
-      - ".github/workflows/**"
+      - ".github/workflows/node-app.yml"
   pull_request:
     branches: [main]
     paths:
       - "examples/node-app/**"
-      - ".github/workflows/**"
-
+      - ".github/workflows/node-app.yml"
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
   IMAGE_NAME: ssc-aurora-docker-local/node-app
