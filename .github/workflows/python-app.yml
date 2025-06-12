@@ -1,3 +1,4 @@
+---
 name: Simple Python Build and Security Scan
 
 on:
@@ -6,12 +7,12 @@ on:
     branches: [main]
     paths:
       - "examples/python-app/**"
-      - ".github/workflows/**"
+      - ".github/workflows/python-app.yml"
   pull_request:
     branches: [main]
     paths:
       - "examples/python-app/**"
-      - ".github/workflows/**"
+      - ".github/workflows/python-app.yml"
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
   IMAGE_NAME: ssc-aurora-docker-local/python-app
