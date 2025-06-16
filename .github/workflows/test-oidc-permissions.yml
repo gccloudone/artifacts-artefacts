@@ -53,25 +53,16 @@ jobs:
             https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis)
           echo "Response: $RESPONSE"
 
-      - name: Docker Login
-        run: |
-          echo "Logging into JFrog Docker registry..."
-          # Use the correct JFrog CLI command for Docker login
-          jf docker login ${{ env.REGISTRY }}
-
       - name: Test Docker Scan (The Failing Command)
         run: |
           echo "Testing the failing docker scan command with DEBUG logging..."
 
-          # Skip building - use an existing image or a simple test
-          # Let's test with a public image first to isolate the scanning issue
-          echo "Testing docker scan with a simple image..."
-
-          # Try scanning a basic image to focus on the OIDC permission issue
+          # Skip Docker login issues - use a public image to focus on the OIDC scanning problem
+          echo "Pulling public hello-world image for testing..."
           docker pull hello-world
-          docker tag hello-world ${{ env.REGISTRY }}/ssc-aurora-docker-local/hello-test:${{ github.sha }}
 
-          echo "Running: jf docker scan with debug logging..."
+          echo "Running: jf docker scan with debug logging on public image..."
+          echo "This should demonstrate the OIDC permission issue..."
           jf docker scan hello-world --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
 
       - name: Test Simple Audit Scan
