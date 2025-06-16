@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
-  JFROG_CLI_LOG_LEVEL: DEBUG
+  JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE for JFrog Support
 
 jobs:
   test-oidc:
@@ -25,7 +25,7 @@ jobs:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
-          JFROG_CLI_LOG_LEVEL: DEBUG
+          JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE too
         with:
           oidc-provider-name: github-oidc
           version: 2.76.1
@@ -58,10 +58,10 @@ jobs:
           echo "Testing the failing docker scan command with DEBUG logging..."
           cd examples/python-app
 
-          # Build test image
+          # Build test image using standard Dockerfile (not Chainguard)
           IMAGE_TAG=${{ env.REGISTRY }}/ssc-aurora-docker-local/debug-test:${{ github.sha }}
           echo "Building: $IMAGE_TAG"
-          docker build -f Dockerfile.chainguard -t $IMAGE_TAG .
+          docker build -f Dockerfile.standard -t $IMAGE_TAG .
 
           echo "Running: jf docker scan with debug logging..."
           jf docker scan $IMAGE_TAG --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
