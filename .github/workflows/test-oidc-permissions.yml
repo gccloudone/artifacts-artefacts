@@ -1,5 +1,4 @@
-name: Test OIDC Permissions
-
+name: Test OIDC Permissions - Debug Mode
 on:
   push:
     branches: [feat/jfrog-oidc]
@@ -7,6 +6,7 @@ on:
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
+  JFROG_CLI_LOG_LEVEL: DEBUG
 
 jobs:
   test-oidc:
@@ -14,7 +14,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,9 +25,20 @@ jobs:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+          JFROG_CLI_LOG_LEVEL: DEBUG
         with:
           oidc-provider-name: github-oidc
           version: 2.76.1
+
+      - name: Collect System Information
+        run: |
+          echo "=== SYSTEM INFO FOR JFROG SUPPORT CASE ==="
+          echo "Workflow Run ID: ${{ github.run_id }}"
+          echo "Date: $(date -u)"
+          echo "JFrog CLI Version: $(jf --version)"
+          echo "Authentication: OIDC"
+          echo "Project: ssc-aurora"
+          echo "========================================"
 
       - name: Test Basic JFrog Connection
         run: |
@@ -38,24 +48,26 @@ jobs:
       - name: Test Xray Entitlements
         run: |
           echo "Testing Xray contextual analysis entitlements..."
-
-          # Test the specific endpoint JFrog Support mentioned
           RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
             -H "Authorization: Bearer ${{ steps.setup-jfrog-cli.outputs.oidc-token }}" \
             https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis)
-
           echo "Response: $RESPONSE"
 
-          # Check if successful
-          if echo "$RESPONSE" | grep -q "HTTP_CODE:200"; then
-            echo "SUCCESS: Xray entitlements accessible"
-          else
-            echo "FAILED: Insufficient permissions for Xray contextual analysis"
-            echo "This confirms you need to update your OIDC identity mapping permissions"
-          fi
-
-      - name: Test Simple Scan (if entitlements work)
+      - name: Test Docker Scan (The Failing Command)
         run: |
-          echo "Attempting a simple audit scan..."
+          echo "Testing the failing docker scan command with DEBUG logging..."
           cd examples/python-app
-          jf audit --format=table --project=ssc-aurora || echo "Scan failed - likely due to permissions"
+
+          # Build test image
+          IMAGE_TAG=${{ env.REGISTRY }}/ssc-aurora-docker-local/debug-test:${{ github.sha }}
+          echo "Building: $IMAGE_TAG"
+          docker build -f Dockerfile.chainguard -t $IMAGE_TAG .
+
+          echo "Running: jf docker scan with debug logging..."
+          jf docker scan $IMAGE_TAG --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
+
+      - name: Test Simple Audit Scan
+        run: |
+          echo "Testing simple audit scan..."
+          cd examples/python-app
+          jf audit --format=table --project=ssc-aurora --fail=false || echo "Audit completed"
