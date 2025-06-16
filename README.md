@@ -95,7 +95,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
 **Enable security scanning:**
 ```yaml
 - name: Scan Dependencies
-  run: jf audit --format=simple
+  run: jf audit --format=table
 
 - name: Scan Container
   run: jf docker scan $IMAGE_TAG
