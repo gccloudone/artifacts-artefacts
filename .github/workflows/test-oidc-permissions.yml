@@ -56,8 +56,9 @@ jobs:
       - name: Docker Login
         run: |
           echo "Logging into JFrog Docker registry..."
-          echo "${{ steps.setup-jfrog-cli.outputs.oidc-token }}" | docker login ${{ env.REGISTRY }} \
-            --username github-oidc --password-stdin
+          # For OIDC, we need to use a different approach
+          # Let's try using jf rt docker-login instead
+          jf rt docker-login ${{ env.REGISTRY }}
 
       - name: Test Docker Scan (The Failing Command)
         run: |
