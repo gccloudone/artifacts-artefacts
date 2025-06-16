@@ -56,25 +56,23 @@ jobs:
       - name: Docker Login
         run: |
           echo "Logging into JFrog Docker registry..."
-          # For OIDC, we need to use a different approach
-          # Let's try using jf rt docker-login instead
-          jf rt docker-login ${{ env.REGISTRY }}
+          # Use the correct JFrog CLI command for Docker login
+          jf docker login ${{ env.REGISTRY }}
 
       - name: Test Docker Scan (The Failing Command)
         run: |
           echo "Testing the failing docker scan command with DEBUG logging..."
-          cd examples/python-app
 
-          # Build test image using standard Dockerfile (not Chainguard)
-          IMAGE_TAG=${{ env.REGISTRY }}/ssc-aurora-docker-local/debug-test:${{ github.sha }}
-          echo "Building: $IMAGE_TAG"
-          docker build -f Dockerfile.standard -t $IMAGE_TAG .
+          # Skip building - use an existing image or a simple test
+          # Let's test with a public image first to isolate the scanning issue
+          echo "Testing docker scan with a simple image..."
 
-          echo "Pushing image to registry..."
-          docker push $IMAGE_TAG
+          # Try scanning a basic image to focus on the OIDC permission issue
+          docker pull hello-world
+          docker tag hello-world ${{ env.REGISTRY }}/ssc-aurora-docker-local/hello-test:${{ github.sha }}
 
           echo "Running: jf docker scan with debug logging..."
-          jf docker scan $IMAGE_TAG --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
+          jf docker scan hello-world --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
 
       - name: Test Simple Audit Scan
         run: |
