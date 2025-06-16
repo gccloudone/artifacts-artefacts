@@ -53,6 +53,12 @@ jobs:
             https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis)
           echo "Response: $RESPONSE"
 
+      - name: Docker Login
+        run: |
+          echo "Logging into JFrog Docker registry..."
+          echo "${{ steps.setup-jfrog-cli.outputs.oidc-token }}" | docker login ${{ env.REGISTRY }} \
+            --username github-oidc --password-stdin
+
       - name: Test Docker Scan (The Failing Command)
         run: |
           echo "Testing the failing docker scan command with DEBUG logging..."
@@ -62,6 +68,9 @@ jobs:
           IMAGE_TAG=${{ env.REGISTRY }}/ssc-aurora-docker-local/debug-test:${{ github.sha }}
           echo "Building: $IMAGE_TAG"
           docker build -f Dockerfile.standard -t $IMAGE_TAG .
+
+          echo "Pushing image to registry..."
+          docker push $IMAGE_TAG
 
           echo "Running: jf docker scan with debug logging..."
           jf docker scan $IMAGE_TAG --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
