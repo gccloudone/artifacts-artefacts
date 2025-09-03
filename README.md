@@ -147,7 +147,8 @@ For more detailed information on our project standards and guidelines, kindly re
 
 - [Artifactory Standards](./docs/artifactory-standards.md)
 - [Chainguard Images](./docs/chainguard-images.md)
-- [Quick Start Guide](./QUICKSTART.md)
+- [Quick Start Guide](./quickstart.md)
+- [Frequently Asked Questinos](./frequently-asked-questions.md)
 - Additional documents will be uploaded soon
 
 ## Feedback and Contributions
