@@ -33,7 +33,7 @@ jobs:
           path: _source
           token: ${{ steps.app.outputs.token }}
 
-      - name: Debug List source directory contents
+      - name: Debug list source directory contents
         run: |
           echo "Contents of _source:"
           ls -R _source
