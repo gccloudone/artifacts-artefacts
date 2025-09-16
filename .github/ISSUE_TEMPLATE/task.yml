@@ -1,0 +1,52 @@
+name: Task
+description: A single deliverable under an epic.
+title: "[Task] <short summary here>"
+labels: [task]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🔖 Please follow our [Issue & PR Naming Conventions](https://aurora.gccloudone.alpha.canada.ca/team/standard-operating-procedures/issue-naming/).
+
+  - type: input
+    id: epic
+    attributes:
+      label: Epic Link
+      description: Parent epic issue number (e.g., `#122`). Required so we can track roll-up progress.
+      placeholder: "#<epic-number>"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: What needs to be done? Be specific and testable.
+      placeholder: Add Backstage chart with AKS defaults; lint & install checks in CI.
+    validations:
+      required: true
+
+  - type: input
+    id: quarter
+    attributes:
+      label: Target Quarter
+      description: Planned quarter (e.g., Q4 2025, Q1 2026). This will map to the Aurora Project iteration.
+      placeholder: Q4 2025
+
+  - type: input
+    id: client
+    attributes:
+      label: Client / Partner
+      description: Department, SSC Field, or Project Team this epic benefits (e.g., STC, SSC-Aurora).
+      placeholder: STC
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Checklist of verifiable outcomes for this task.
+      placeholder: |
+        - [ ] Chart passes `helm lint`
+        - [ ] Installs in k3s (CI)
+        - [ ] Docs added in /docs
+        - [ ] CI runs lint + install checks
