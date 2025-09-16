@@ -33,12 +33,22 @@ jobs:
           path: _source
           token: ${{ steps.app.outputs.token }}
 
+      - name: Debug: List source directory contents
+        run: |
+          echo "Contents of _source:"
+          ls -R _source
+
       - name: Sync ISSUE_TEMPLATE directory
         run: |
-          mkdir -p .github/ISSUE_TEMPLATE
-          rsync -a --delete \
-            _source/ISSUE_TEMPLATE/ \
-            .github/ISSUE_TEMPLATE/
+          if [ -d "_source/ISSUE_TEMPLATE" ]; then
+            echo "Syncing ISSUE_TEMPLATE directory..."
+            mkdir -p .github/ISSUE_TEMPLATE
+            rsync -a --delete \
+              _source/ISSUE_TEMPLATE/ \
+              .github/ISSUE_TEMPLATE/
+          else
+            echo "Directory _source/ISSUE_TEMPLATE does not exist. Skipping sync step."
+          fi
 
       - name: Commit changes if any
         uses: stefanzweifel/git-auto-commit-action@v5
