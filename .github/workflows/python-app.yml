@@ -42,7 +42,7 @@ jobs:
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
           oidc-provider-name: github-oidc
-          version: 2.78.3
+          version: 2.79.0
 
       - name: Docker login via OIDC
         uses: docker/login-action@v3

@@ -28,7 +28,7 @@ jobs:
           JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE too
         with:
           oidc-provider-name: github-oidc
-          version: 2.78.3
+          version: 2.79.0
 
       - name: Collect System Information
         run: |
