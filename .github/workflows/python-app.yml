@@ -98,6 +98,7 @@ jobs:
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
           oidc-provider-name: github-oidc
+          version: 2.79.0
 
       - name: Cleanup Old Images (Cost Savings)
         run: |
@@ -133,6 +134,7 @@ jobs:
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
         with:
           oidc-provider-name: github-oidc
+          version: 2.79.0
 
       - name: Run Frogbot
         uses: jfrog/frogbot@v2

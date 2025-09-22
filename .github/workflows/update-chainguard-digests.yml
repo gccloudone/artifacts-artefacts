@@ -22,6 +22,7 @@ jobs:
           JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
         with:
           oidc-provider-name: github-oidc
+          version: 2.79.0
 
       - name: Docker login via OIDC
         run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
