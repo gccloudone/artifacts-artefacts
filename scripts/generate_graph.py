@@ -31,8 +31,8 @@ ax.plot(df["just_date"], df["count"], marker="o")
 ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
 # Force X-axis to show one tick per unique date
-ax.xaxis.set_major_locator(mdates.DayLocator())  
-ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))  # Show only month-day (e.g., 06-01)
+ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
 
 # Rotate X-axis labels 45° so they don’t overlap
 fig.autofmt_xdate(rotation=45)
