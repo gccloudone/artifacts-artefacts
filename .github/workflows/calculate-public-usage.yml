@@ -17,6 +17,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: stats
           persist-credentials: true
 
       - name: Count unique repos referencing JF_URL
