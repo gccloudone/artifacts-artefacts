@@ -45,8 +45,8 @@ SSC is still evaluating how Chainguard procurement could work going forward and 
 
 To assist in understanding our plans and facilitate discussions, we have attached two decks:
 
-- [Chainguard Progress Deck](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/chainguard-progress-deck.pptx)
-- [Chainguard Technical Deck](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/chainguard-technical-deck.pptx)
+- [Chainguard Progress Deck](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/chainguard-progress-deck.pdf)
+- [Chainguard Technical Deck](https://gccloudone.blob.core.windows.net/artifacts-artefacts/unclassified/chainguard-technical-deck.pdf)
 
 We would love to hear your feedback and/or any questions you might have!
 
