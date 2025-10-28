@@ -35,7 +35,9 @@ Chainguard has provided **Shared Services Canada (SSC)** with a list of all depa
 
 To streamline procurement and maximize value across GC, we are actively working towards a "pooled" approach. In this model, SSC will act as the central repository, enabling all participating departments with container image needs to access and share resources. This collaborative strategy promotes efficiency while allowing licensing costs to decrease as the total quantity of images purchased increases, resulting in cost savings over time.
 
-Chainguard licensing is based on a per-image model, which includes access to all supported versions of each image. To view the complete directory of over 1,750 hardened container images—including supported versions, SBOMs, comparisons to upstream CVEs, and other critical details—please visit the [Chainguard image directory](https://images.chainguard.dev/directory?category=all).
+Chainguard licensing is based on a per-image model, which includes access to all supported versions of each image. To view the complete directory of over 1,750 hardened container images, including supported versions, SBOMs, comparisons to upstream CVEs, and other critical details.
+
+Please visit the [Chainguard image directory](https://images.chainguard.dev/directory?category=all).
 
 ### Next Steps and Your Input
 
@@ -109,8 +111,10 @@ The following hardened container images are under active consideration:
 
 ## Frequently Asked Questions
 
-**Q. Can’t the Government of Canada build similar functionality internally?**  
+**Q. Can’t the Government of Canada build similar functionality internally?**
+
 While this is possible, developing an equivalent to Chainguard's offering would require significant time, resources, and specialized expertise. A formal business value assessment is currently underway to evaluate the time, cost, and potential challenges involved in developing a comparable solution.
 
-**Q. Have other governments implemented similar solutions?**  
+**Q. Have other governments implemented similar solutions?**
+
 Yes, many governments have implemented similar solutions. For example, **Gov.UK** has adopted hardened container images as a key element of their security practices. Adam Moss of the UK’s Department for Work and Pensions (DWP) has shared how this initiative improved their security posture and saved considerable time. Mr. Moss is available to present insights at upcoming events to help inform our decisions.
