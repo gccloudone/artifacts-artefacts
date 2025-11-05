@@ -37,6 +37,19 @@ Using the internal registry offers quicker and more reliable access. If the imag
 
 Departments can also request to have designated users being B2B federated with SSC's enterprise tenant and then could gain direct access to the Chainguard Portal and set up their own pull based tokens. While this enables teams to explore the full image catalogue and manage access to container images directly, the preferred and most efficient method remains pulling images through GC Secure Artifacts.
 
+#### Login Process to Chainguard Portal
+
+The login process for users who wish to get direct access to the Chainguard Portal is as follows.
+
+- User goes to https://console.chainguard.dev/auth/login
+- Then they click "Use Your Identity Provider"
+- Then they click "Use Organization Name"
+- Then they type "ssc-spc.gc.ca"
+- Then they click "Login with Provider"
+- Then they get redirected to Entra ID
+
+At which point once the user accounts are seen in the portal we usually elevate the user account to owner so those accounts can create their own pull tokens.
+
 ## Procurement
 
 Chainguard has provided **Shared Services Canada (SSC)** with a list of all departments currently signed up to consume their container images.
