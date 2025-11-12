@@ -1,0 +1,49 @@
+name: Epic
+description: Track a high-level deliverable in Aurora (with sub-issues for progress).
+title: "[Epic] <short summary here>"
+labels: [epic]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🔖 Please follow our [Issue & PR Naming Conventions](https://aurora.gccloudone.alpha.canada.ca/team/standard-operating-procedures/issue-naming/).
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Epic Summary
+      description: Short, outcome-oriented description of this epic and its purpose.
+      placeholder: Integrate Chainguard into GC Secure Artifacts.
+    validations:
+      required: true
+
+  - type: input
+    id: quarter
+    attributes:
+      label: Target Quarter
+      description: Planned quarter (e.g., Q4 2025, Q1 2026). This will map to the Aurora Project iteration.
+      placeholder: Q4 2025
+
+  - type: input
+    id: client
+    attributes:
+      label: Client / Partner
+      description: Department, SSC Field, or Project Team this epic benefits (e.g., STC, SSC-Aurora).
+      placeholder: STC
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: Business or technical value delivered when this epic is complete.
+      placeholder: Shared trusted images reduce duplication and cost.
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks (sub-issues)
+      description: Use issue convention to link tasks; progress auto-rolls up here.
+      placeholder: |
+        - [ ] #123 Define repo structure in JFrog
+        - [ ] #124 Nightly sync from Chainguard → JFrog
+        - [ ] #125 Consumer docs for departments

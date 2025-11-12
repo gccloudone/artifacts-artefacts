@@ -31,7 +31,7 @@ For further insight into the GC Secure Artifacts initiative, below is an present
 
 
 ## Github Public Adoption
-<img src="stats/usage.png" alt="Usage Over Time" style="width: 100%;" />
+<img src="https://github.com/gccloudone/artifacts-artefacts/blob/stats/stats/usage.png?raw=true" alt="Usage Over Time" style="width: 100%;" />
 
 As the days go by, you can see how the count evolves… here is our github public adoption(Search Results).
 
@@ -147,7 +147,8 @@ For more detailed information on our project standards and guidelines, kindly re
 
 - [Artifactory Standards](./docs/artifactory-standards.md)
 - [Chainguard Images](./docs/chainguard-images.md)
-- [Quick Start Guide](./QUICKSTART.md)
+- [Quick Start Guide](./docs/quickstart.md)
+- [Frequently Asked Questinos](./docs/frequently-asked-questions.md)
 - Additional documents will be uploaded soon
 
 ## Feedback and Contributions

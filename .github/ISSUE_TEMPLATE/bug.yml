@@ -1,0 +1,63 @@
+name: Bug Report
+description: Report something in Aurora that is not working as expected.
+title: "[Bug] <short summary here>"
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🔖 Please follow our [Issue & PR Naming Conventions](https://aurora.gccloudone.alpha.canada.ca/team/standard-operating-procedures/issue-naming/).
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+      placeholder: |
+        Tried deploying chart X; expected pods to start; got CrashLoopBackOff for component Y.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+        3. …
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment / Context
+      description: Where did this happen? (repo, service, cluster/cloud, version)
+      placeholder: aurora-platform-charts, project-aurora-template, cidr-allocator
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: input
+    id: quarter
+    attributes:
+      label: Target Quarter
+      description: Planned quarter (e.g., Q4 2025, Q1 2026). This will map to the Aurora Project iteration.
+      placeholder: Q4 2025
+
+  - type: input
+    id: client
+    attributes:
+      label: Client / Partner
+      description: Department, SSC Field, or Project Team this epic benefits (e.g., STC, SSC-Aurora).
+      placeholder: STC

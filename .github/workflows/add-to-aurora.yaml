@@ -1,0 +1,19 @@
+name: Add new issues to Aurora project
+
+on:
+  issues:
+    types: [opened, reopened]
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  call-workflow:
+    uses: gccloudone-aurora/.github/.github/workflows/add-to-aurora.yaml@main
+    with:
+      status_field_id: "PVTSSF_lADOC7oH384BDHFszg1H9FI"
+      todo_option_id:  "f75ad846"
+    secrets:
+      AURORA_APP_ID: ${{ secrets.AURORA_APP_ID }}
+      AURORA_APP_PRIVATE_KEY: ${{ secrets.AURORA_APP_PRIVATE_KEY }}
