@@ -131,6 +131,9 @@ The following hardened container images are under active consideration:
 | Nginx Ingress Controller     | TBD              | Service Canada   | Application | Manages routing traffic in Kubernetes          |
 | Cert Manager                 | TBD              | Service Canada   | Application | Automates creation/renewal of TLS certificates |
 | Valkey                       | TBD              | Service Canada   | Application | Manages secure key and certificate storage     |
+| falco-no-driver              | TBD              | SSC              | Application | Monitor and Capture Linux Kernel Events        |
+| sysdig                       | TBD              | SSC              | Application | Monitor and Capture Container Events           |
+ 
 
 ## Frequently Asked Questions
 
