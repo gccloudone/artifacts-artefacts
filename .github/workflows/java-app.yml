@@ -27,7 +27,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        dockerfile: [standard]
+        dockerfile: [chainguard, standard]
 
     steps:
       - name: GBS Start Capture
@@ -64,20 +64,6 @@ jobs:
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           docker build -f examples/java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG examples/java-app
 
-      - name: Push image
-        run: |
-          IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-          docker push $IMAGE_TAG
-      - name: Publish Build Info
-        run: |
-          jf rt build-add-git ${{ matrix.dockerfile }}-app ${{ github.run_number }}
-          jf rt build-publish ${{ matrix.dockerfile }}-app ${{ github.run_number }}
-
-      - name: Scan with JFrog Xray
-        run: |
-          IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
-          echo "Scanning ${{ matrix.dockerfile }} image..."
-          jf docker scan $IMAGE_TAG
 
       - name: GBS Stop Capture
         uses: KingBain/falco-actions/stop@latest-upload
@@ -89,6 +75,9 @@ jobs:
   gbs-analyze:
     needs: [build-and-scan]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile: [chainguard, standard]
     permissions:
       contents: read
       actions: read
