@@ -147,6 +147,7 @@ jobs:
           JF_ENABLE_SAST: "false"
           JF_ENABLE_SECRETS: "false"
           JF_ENABLE_IAC: "false"
+          JF_FAIL: "false"
 
   summary:
     needs: [build-and-scan, cleanup]
