@@ -1,9 +1,6 @@
 ---
 name: Simple Python Build and Security Scan
 
-vars:
-  DOCKERFILES: '["chainguard","standard"]'
-
 on:
   workflow_dispatch:
   push:
@@ -19,6 +16,7 @@ on:
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
   IMAGE_NAME: ssc-aurora-docker-local/python-app
+  DOCKERFILES_JSON: '["chainguard","standard"]'
 
 jobs:
   build-and-scan:
@@ -29,7 +27,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        dockerfile: ${{ fromJSON(vars.DOCKERFILES) }}
+        dockerfile: ${{ fromJSON(env.DOCKERFILES_JSON) }}
 
     steps:
       - name: GBS Start Capture
@@ -92,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dockerfile: ${{ fromJSON(vars.DOCKERFILES) }}
+        dockerfile: ${{ fromJSON(env.DOCKERFILES_JSON) }}
     permissions:
       contents: read
       actions: read
