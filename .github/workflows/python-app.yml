@@ -95,7 +95,7 @@ jobs:
           hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
 
   gbs-analyze:
-    needs: [build-and-scan]
+    needs: [build-and-scan, setup-matrix]
     runs-on: ubuntu-latest
     strategy:
       matrix:
