@@ -63,7 +63,7 @@ jobs:
         run: |
           echo "Scanning dependencies for security issues..."
           cd examples/node-app
-          jf audit --format=simple || echo "Issues found - check output above"
+          jf audit --format=table || echo "Issues found - check output above"
           echo ""
           echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 
@@ -92,7 +92,7 @@ jobs:
           mode: analyze
           capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
           hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
-          
+
   gbs-analyze:
     needs: [build-and-scan, setup-matrix]
     runs-on: ubuntu-latest
