@@ -19,20 +19,7 @@ env:
   IMAGE_NAME: ssc-aurora-docker-local/java-app
 
 jobs:
-  start-gbs:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
-    steps:
-      - name: Start Sysdig System Capture
-        uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
-        with:
-          mode: analyze
-          sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
-        
   build-and-scan:
-    needs: [start-gbs]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,6 +30,12 @@ jobs:
         dockerfile: [standard, chainguard]
 
     steps:
+      - name: GBS Start Capture
+        uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
+        with:
+          mode: analyze
+          sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -86,29 +79,17 @@ jobs:
           echo "Scanning ${{ matrix.dockerfile }} image..."
           jf docker scan $IMAGE_TAG
 
-  stop-gbs:
-    needs: [build-and-scan]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
-    steps:
-      - name: Stop Sysdig System Capture
+      - name: Stop GBS Capture
         uses: falcosecurity/falco-actions/stop@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
         with:
           mode: analyze
 
-  analyze:
-    runs-on: ubuntu-latest
-    needs: [stop-gbs]
-    permissions:
-      contents: read
-      actions: read
-    steps:
-    - name: Analyze
-      uses: KingBain/falco-actions/analyze@analyze-version
-      with:
-        falco-version: 'sha256:ba05dfb209cc1c2e912ce116d230b5f59c4542e7286f05b663c499066d5d6a42'
+      - name: GBS Analyze
+        uses: KingBain/falco-actions/analyze@analyze-version
+        with:
+          falco-version: 'sha256:ba05dfb209cc1c2e912ce116d230b5f59c4542e7286f05b663c499066d5d6a42'
+
+    
 
   cleanup:
     runs-on: ubuntu-latest
@@ -178,6 +159,3 @@ jobs:
           echo "- Automated Cleanup: Checked for old images to save storage costs" >> $GITHUB_STEP_SUMMARY
           echo "- Frogbot: Automated security comments on pull requests" >> $GITHUB_STEP_SUMMARY
           echo "- Image Scanning: JFrog Xray scanned container images" >> $GITHUB_STEP_SUMMARY
-
-
-
