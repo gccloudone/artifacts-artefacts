@@ -31,10 +31,10 @@ jobs:
 
     steps:
       - name: Start Sysdig System Capture
-      uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
-      with:
-        mode: analyze
-        sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
+        uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
+        with:
+          mode: analyze
+          sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
 
       - name: Checkout code
         uses: actions/checkout@v4
