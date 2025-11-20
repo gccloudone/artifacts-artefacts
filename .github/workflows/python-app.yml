@@ -24,7 +24,6 @@ jobs:
       dockerfiles: ${{ steps.set-matrix.outputs.dockerfiles }}
     steps:
       - id: set-matrix
-        # We define the JSON here and output it
         run: echo "dockerfiles=['chainguard','standard']" >> $GITHUB_OUTPUT
 
   build-and-scan:
