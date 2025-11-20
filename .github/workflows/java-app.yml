@@ -79,13 +79,13 @@ jobs:
           echo "Scanning ${{ matrix.dockerfile }} image..."
           jf docker scan $IMAGE_TAG
 
-      - name: Stop GBS Capture
+      - name: GBS Stop Capture
         uses: KingBain/falco-actions/stop@latest-upload
         with:
           mode: analyze
 
       - name: GBS Analyze
-        uses: KingBain/falco-actions/stop@latest-upload
+        uses: KingBain/falco-actions/analyze@latest-upload
 
     
 
