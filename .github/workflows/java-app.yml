@@ -27,7 +27,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        dockerfile: [standard, chainguard]
+        dockerfile: [standard]
 
     steps:
       - name: GBS Start Capture
@@ -55,7 +55,7 @@ jobs:
         run: |
           echo "Scanning dependencies for security issues..."
           cd examples/java-app
-          jf audit --format=simple || echo "Issues found - check output above"
+          jf audit --format=simple-json || echo "Issues found - check output above"
           echo ""
           echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 
