@@ -98,6 +98,18 @@ jobs:
         with:
           mode: analyze
 
+  analyze:
+    runs-on: ubuntu-latest
+    needs: [stop-gbs]
+    permissions:
+      contents: read
+      actions: read
+    steps:
+    - name: Analyze
+      uses: KingBain/falco-actions/analyze@analyze-version
+      with:
+        falco-version: 'sha256:ba05dfb209cc1c2e912ce116d230b5f59c4542e7286f05b663c499066d5d6a42'
+
   cleanup:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
@@ -169,14 +181,3 @@ jobs:
 
 
 
-  analyze:
-    runs-on: ubuntu-latest
-    needs: [summary]
-    permissions:
-      contents: read
-      actions: read
-    steps:
-    - name: Analyze
-      uses: KingBain/falco-actions/analyze@analyze-version
-      with:
-        falco-version: 'sha256:ba05dfb209cc1c2e912ce116d230b5f59c4542e7286f05b663c499066d5d6a42'
