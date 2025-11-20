@@ -73,6 +73,15 @@ jobs:
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           docker build -f examples/java-app/Dockerfile.${{ matrix.dockerfile }} -t $IMAGE_TAG examples/java-app
 
+      - name: Push image
+        run: |
+          IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
+          docker push $IMAGE_TAG
+      - name: Publish Build Info
+        run: |
+          jf rt build-add-git ${{ matrix.dockerfile }}-app ${{ github.run_number }}
+          jf rt build-publish ${{ matrix.dockerfile }}-app ${{ github.run_number }}
+          
       - name: GBS Stop Capture
         uses: KingBain/falco-actions/stop@latest-upload
         with:
