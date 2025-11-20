@@ -83,9 +83,14 @@ jobs:
         uses: KingBain/falco-actions/stop@latest-upload
         with:
           mode: analyze
+          capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
+          hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
 
       - name: GBS Analyze
         uses: KingBain/falco-actions/analyze@latest-upload
+        with:
+          capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
+          hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
 
     
 
