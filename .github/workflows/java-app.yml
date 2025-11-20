@@ -86,13 +86,18 @@ jobs:
           capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
           hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
 
+  gbs-analyze:
+    needs: [build-and-scan]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
       - name: GBS Analyze
         uses: KingBain/falco-actions/analyze@latest-upload
         with:
           capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
           hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
-
-    
 
   cleanup:
     runs-on: ubuntu-latest
