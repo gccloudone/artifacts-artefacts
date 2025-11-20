@@ -80,14 +80,12 @@ jobs:
           jf docker scan $IMAGE_TAG
 
       - name: Stop GBS Capture
-        uses: falcosecurity/falco-actions/stop@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
+        uses: KingBain/falco-actions/stop@latest-upload
         with:
           mode: analyze
 
       - name: GBS Analyze
-        uses: KingBain/falco-actions/analyze@analyze-version
-        with:
-          falco-version: 'sha256:ba05dfb209cc1c2e912ce116d230b5f59c4542e7286f05b663c499066d5d6a42'
+        uses: KingBain/falco-actions/stop@latest-upload
 
     
 
