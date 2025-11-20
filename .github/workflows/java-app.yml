@@ -86,12 +86,17 @@ jobs:
           echo "Scanning ${{ matrix.dockerfile }} image..."
           jf docker scan $IMAGE_TAG
 
+  stop-gbs:
+    needs: [build-and-scan]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
       - name: Stop Sysdig System Capture
         uses: falcosecurity/falco-actions/stop@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
         with:
           mode: analyze
-
-
 
   cleanup:
     runs-on: ubuntu-latest
