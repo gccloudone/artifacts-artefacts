@@ -19,7 +19,20 @@ env:
   IMAGE_NAME: ssc-aurora-docker-local/java-app
 
 jobs:
+  start-gbs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Start Sysdig System Capture
+        uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
+        with:
+          mode: analyze
+          sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
+        
   build-and-scan:
+    needs: [start-gbs]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -30,12 +43,6 @@ jobs:
         dockerfile: [standard, chainguard]
 
     steps:
-      - name: Start Sysdig System Capture
-        uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
-        with:
-          mode: analyze
-          sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
