@@ -16,9 +16,17 @@ on:
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
   IMAGE_NAME: ssc-aurora-docker-local/python-app
-  DOCKERFILES_JSON: '["chainguard","standard"]'
 
 jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfiles: ${{ steps.set-matrix.outputs.dockerfiles }}
+    steps:
+      - id: set-matrix
+        # We define the JSON here and output it
+        run: echo "dockerfiles=['chainguard','standard']" >> $GITHUB_OUTPUT
+
   build-and-scan:
     runs-on: ubuntu-latest
     permissions:
@@ -27,7 +35,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        dockerfile: ${{ fromJSON(env.DOCKERFILES_JSON) }}
+        dockerfile: ${{ fromJSON(needs.setup-matrix.outputs.dockerfiles) }}
 
     steps:
       - name: GBS Start Capture
@@ -90,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dockerfile: ${{ fromJSON(env.DOCKERFILES_JSON) }}
+        dockerfile: ${{ fromJSON(needs.setup-matrix.outputs.dockerfiles) }}
     permissions:
       contents: read
       actions: read
