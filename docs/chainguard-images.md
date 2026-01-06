@@ -90,50 +90,81 @@ The following hardened container images have already been procured:
 
 The following hardened container images are under active consideration:
 
-| **Image Name**               | **Renewal Date** | **Department**   | **Type**    | **Notes**                                      |
-|------------------------------|------------------|------------------|-------------|------------------------------------------------|
-| external-dns-iamguarded      | TBD              | CSE              | Helm        | For managing external DNS records              |
-| kafka-iamguarded             | TBD              | CSE              | Helm        | For distributed messaging systems              |
-| kube-state-metrics-iamguarded| TBD              | CSE              | Helm        | Monitors Kubernetes cluster state              |
-| logstash-iamguarded          | TBD              | CSE              | Helm        | For data collection and processing             |
-| minio-iamguarded             | TBD              | CSE              | Helm        | High-performance object storage                |
-| mongodb-iamguarded           | TBD              | CSE              | Helm        | NoSQL database                                 |
-| mongodb-sharded-iamguarded   | TBD              | CSE              | Helm        | Sharded MongoDB cluster                        |
-| nginx-iamguarded             | TBD              | CSE              | Helm        | High-performance web server/proxy              |
-| rabbitmq-iamguarded          | TBD              | CSE              | Helm        | For message queuing and communication          |
-| thanos-iamguarded            | TBD              | CSE              | Helm        | For highly available Prometheus setup          |
-| fluent-bit-iamguarded        | TBD              | CSE              | Helm        | Log processor and forwarder                    |
-| grafana-iamguarded           | TBD              | CSE              | Helm        | For monitoring and visualization               |
-| grafana-loki-iamguarded      | TBD              | CSE              | Helm        | Log aggregation and querying                   |
-| grafana-operator-iamguarded  | TBD              | CSE              | Helm        | Manages Grafana instances in Kubernetes.       |
-| kube-prometheus-iamguarded   | TBD              | CSE              | Helm        | Monitors Kubernetes with Prometheus            |
-| metalb-iamguarded            | TBD              | CSE              | Helm        | Load balancer for Kubernetes                   |
-| neo4j-iamguarded             | TBD              | CSE              | Helm        | Graph database                                 |
-| oauth2-proxy-iamguarded      | TBD              | CSE              | Helm        | Authentication proxy for OAuth2                |
-| opensearch-iamguarded        | TBD              | CSE              | Helm        | Search and analytics engine                    |
-| solr-iamguarded              | TBD              | CSE              | Helm        | Search platform for structured data            |
-| vault-iamguarded             | TBD              | CSE              | Helm        | Secrets management tool                        |
-| postgres                     | TBD              | CCCS             | Application | Relational database system                     |
-| Kubernetes-event-exporter    | TBD              | CCCS             | Application | Monitors and exports Kubernetes events         |
-| nginx-controller             | TBD              | CCCS             | Application | Manages NGINX deployments                      |
-| external-dns                 | TBD              | CCCS             | Application | For managing external DNS records              |
-| oauth2-proxy                 | TBD              | CCCS             | Application | Authentication proxy for OAuth2                |
-| httpd                        | TBD              | NRCAN            | Application | Apache HTTP server                             |
-| neo4j                        | TBD              | NRCAN            | Application | Graph database                                 |
-| nginx                        | TBD              | NRCAN            | Application | High-performance web server/proxy              |
-| postgis                      | TBD              | NRCAN            | Application | Geospatial database extension for PostgreSQL   |
-| pytorch                      | TBD              | NRCAN            | Application | Open-source machine learning framework         |
-| geoserver                    | TBD              | NRCAN            | Application | Open-source server for geospatial data         |
-| osgeo/gdal                   | TBD              | NRCAN            | Application | Geospatial Data Abstraction Library            |
-| qgis                         | TBD              | NRCAN            | Application | Geographic Information System software         |
-| grass-gis                    | TBD              | NRCAN            | Application | Open-source geographic information system      |
-| pygeoapi                     | TBD              | NRCAN            | Application | Standards-based geospatial data API            |
-| Nginx Ingress Controller     | TBD              | Service Canada   | Application | Manages routing traffic in Kubernetes          |
-| Cert Manager                 | TBD              | Service Canada   | Application | Automates creation/renewal of TLS certificates |
-| Valkey                       | TBD              | Service Canada   | Application | Manages secure key and certificate storage     |
-| falco-no-driver              | TBD              | SSC              | Application | Monitor and Capture Linux Kernel Events        |
-| sysdig                       | TBD              | SSC              | Application | Monitor and Capture Container Events           |
- 
+| **Image Name**                    | **Renewal Date** | **Department** | **Type**    | **Notes**                                      |
+|-----------------------------------|------------------|----------------|-------------|------------------------------------------------|
+| external-dns-iamguarded           | TBD              | CSE            | Helm        | For managing external DNS records              |
+| kafka-iamguarded                  | TBD              | CSE            | Helm        | For distributed messaging systems              |
+| kube-state-metrics-iamguarded     | TBD              | CSE            | Helm        | Monitors Kubernetes cluster state              |
+| logstash-iamguarded               | TBD              | CSE            | Helm        | For data collection and processing             |
+| minio-iamguarded                  | TBD              | CSE            | Helm        | High-performance object storage                |
+| mongodb-iamguarded                | TBD              | CSE            | Helm        | NoSQL database                                 |
+| mongodb-sharded-iamguarded        | TBD              | CSE            | Helm        | Sharded MongoDB cluster                        |
+| nginx-iamguarded                  | TBD              | CSE            | Helm        | High-performance web server/proxy              |
+| rabbitmq-iamguarded               | TBD              | CSE            | Helm        | For message queuing and communication          |
+| thanos-iamguarded                 | TBD              | CSE            | Helm        | For highly available Prometheus setup          |
+| fluent-bit-iamguarded             | TBD              | CSE            | Helm        | Log processor and forwarder                    |
+| grafana-iamguarded                | TBD              | CSE            | Helm        | For monitoring and visualization               |
+| grafana-loki-iamguarded           | TBD              | CSE            | Helm        | Log aggregation and querying                   |
+| grafana-operator-iamguarded       | TBD              | CSE            | Helm        | Manages Grafana instances in Kubernetes.       |
+| kube-prometheus-iamguarded        | TBD              | CSE            | Helm        | Monitors Kubernetes with Prometheus            |
+| metalb-iamguarded                 | TBD              | CSE            | Helm        | Load balancer for Kubernetes                   |
+| neo4j-iamguarded                  | TBD              | CSE            | Helm        | Graph database                                 |
+| oauth2-proxy-iamguarded           | TBD              | CSE            | Helm        | Authentication proxy for OAuth2                |
+| opensearch-iamguarded             | TBD              | CSE            | Helm        | Search and analytics engine                    |
+| solr-iamguarded                   | TBD              | CSE            | Helm        | Search platform for structured data            |
+| vault-iamguarded                  | TBD              | CSE            | Helm        | Secrets management tool                        |
+| postgres                          | TBD              | CCCS           | Application | Relational database system                     |
+| Kubernetes-event-exporter         | TBD              | CCCS           | Application | Monitors and exports Kubernetes events         |
+| nginx-controller                  | TBD              | CCCS           | Application | Manages NGINX deployments                      |
+| external-dns                      | TBD              | CCCS           | Application | For managing external DNS records              |
+| oauth2-proxy                      | TBD              | CCCS           | Application | Authentication proxy for OAuth2                |
+| httpd                             | TBD              | NRCAN          | Application | Apache HTTP server                             |
+| neo4j                             | TBD              | NRCAN          | Application | Graph database                                 |
+| nginx                             | TBD              | NRCAN          | Application | High-performance web server/proxy              |
+| postgis                           | TBD              | NRCAN          | Application | Geospatial database extension for PostgreSQL   |
+| pytorch                           | TBD              | NRCAN          | Application | Open-source machine learning framework         |
+| geoserver                         | TBD              | NRCAN          | Application | Open-source server for geospatial data         |
+| osgeo/gdal                        | TBD              | NRCAN          | Application | Geospatial Data Abstraction Library            |
+| qgis                              | TBD              | NRCAN          | Application | Geographic Information System software         |
+| grass-gis                         | TBD              | NRCAN          | Application | Open-source geographic information system      |
+| pygeoapi                          | TBD              | NRCAN          | Application | Standards-based geospatial data API            |
+| Nginx Ingress Controller          | TBD              | Service Canada | Application | Manages routing traffic in Kubernetes          |
+| Cert Manager                      | TBD              | Service Canada | Application | Automates creation/renewal of TLS certificates |
+| Valkey                            | TBD              | Service Canada | Application | Manages secure key and certificate storage     |
+| falco-no-driver                   | TBD              | SSC            | Application | Monitor and Capture Linux Kernel Events        |
+| sysdig                            | TBD              | SSC            | Application | Monitor and Capture Container Events           |
+| apache-nifi                       | TBD              | PSC            | Application |                                                |
+| apache-nifi-registry              | TBD              | PSC            | Application |                                                |
+| python-fips                       | TBD              | PSC            | Application |                                                |
+| nginx-iamguarded-fips             | TBD              | PSC            | Application |                                                |
+| postgres-iamguarded-fips          | TBD              | PSC            | Application |                                                |
+| kafka-iamguarded                  | TBD              | PSC            | Application |                                                |
+| node (free)                       | TBD              | PSC            | Application |                                                |
+| node-fips                         | TBD              | PSC            | Application |                                                |
+| nginx (free)                      | TBD              | PSC            | Application |                                                |
+| go (free)                         | TBD              | PSC            | Application |                                                |
+| go-fips                           | TBD              | PSC            | Application |                                                |
+| postgres-operator-fips            | TBD              | PSC            | Application |                                                |
+| postgres-fips                     | TBD              | PSC            | Application |                                                |
+| rabbitmq-iamguarded-fips          | TBD              | PSC            | Application |                                                |
+| rabbitmq-fips                     | TBD              | PSC            | Application |                                                |
+| elastic-searhc-iamguarded-fips    | TBD              | PSC            | Application |                                                |
+| elasticsearch-fips (v7 & v8 tags) | TBD              | PSC            | Application |                                                |
+| redis-operator-fips               | TBD              | PSC            | Application |                                                |
+| redis-server-iamguarded-fips      | TBD              | PSC            | Application |                                                |
+| redis-cluster-iamguarded-fips     | TBD              | PSC            | Application |                                                |
+| redis-sentinel-iamguarded-fips    | TBD              | PSC            | Application |                                                |
+| redis-fips                        | TBD              | PSC            | Application |                                                |
+| temporal-admin-tools-fips         | TBD              | PSC            | Application |                                                |
+| temporal-server-fips              | TBD              | PSC            | Application |                                                |
+| temporal-ui-server-fips           | TBD              | PSC            | Application |                                                |
+| adoptium-jre-fips                 | TBD              | PSC            | Application |                                                |
+| wolfi-base                        | TBD              | PSC            | Application |                                                |
+| solr                              | TBD              | PSC            | Application |                                                |
+| zookeeper-iamguarded-fips         | TBD              | PSC            | Application |                                                |
+| busybox-fips                      | TBD              | PSC            | Application |                                                |
+| docker-dind                       | TBD              | PSC            | Application |                                                |
+| openldap-fips                     | TBD              | PSC            | Application |                                                |
 
 ## Frequently Asked Questions
 
