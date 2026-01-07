@@ -3,11 +3,52 @@
 ## Prerequisites
 
 1. **JFrog Access**: Ensure you have GC Secure Artifacts access
-2. **Repository Secrets**: Configure these in your GitHub repository:
-   - `JFROG_USERNAME`: Your Artifactory username
-   - `JFROG_JWT_TOKEN`: Your Artifactory access token
+2. **OIDC Configuration**: Your repository must be configured in JFrog's OIDC identity mappings (see below)
+3. **No Secrets Required**: OIDC eliminates the need for stored credentials
 
-## Step 1: Update Your Dockerfile
+### Configure Identity Mappings in JFrog
+
+Before using the workflows, set up OIDC authentication in JFrog Artifactory:
+
+1. Login to [JFrog Artifactory](https://artifacts-artefacts.devops.cloud-nuage.canada.ca)
+2. Click **Administration** (gear icon) → **Platform Security** → **OpenID Connect** → **Identity Mappings** tab
+3. Click **+ New Identity Mapping** and create mappings for each workflow:
+
+**For your repository workflows, create these identity mappings:**
+
+```
+Name: your-org-java-app
+Priority: 1
+Description: OIDC mapping for Java application workflow
+
+Claims JSON:
+{
+    "iss": "https://token.actions.githubusercontent.com",
+    "repository": "your-org/your-repo",
+    "workflow_ref": "your-org/your-repo/.github/workflows/java-app.yml@refs/heads/main"
+}
+
+Token Scope: (leave blank)
+Roles: Viewer
+Service: artifactory
+Token Expiration: 10 minutes
+```
+
+*Replace `your-org/your-repo` with your actual GitHub organization and repository name. Create similar mappings for python-app.yml, node-app.yml, and any other workflows you use.*
+
+## Step 1: Add OIDC Permissions
+
+Add these permissions to your workflow jobs:
+
+```yaml
+permissions:
+  id-token: write  authentication
+  contents: read
+  security-events: write
+  pull-requests: write
+```
+
+## Step 2: Update Your Dockerfile
 
 Replace your current base image with a Chainguard equivalent:
 
@@ -21,25 +62,29 @@ FROM python:3.13-slim
 FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
 ```
 
-## Step 2: Add JFrog CLI to Your Workflow
+## Step 3: Setup JFrog CLI with OIDC
 
 ```yaml
-- name: Setup JFrog CLI
+- name: Setup JFrog CLI with OIDC
   uses: jfrog/setup-jfrog-cli@v4
   env:
     JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-    JF_USER: ${{ secrets.JFROG_USERNAME }}
-    JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+  with:
+    oidc-provider-name: github-oidc
+
+
+- name: Docker login via OIDC
+  run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
 ```
 
-## Step 3: Add Security Scanning
+## Step 4: Add Security Scanning
 
 **Scan Dependencies:**
 ```yaml
 - name: Scan Dependencies
   run: |
     echo "Scanning dependencies for security issues..."
-    jf audit --format=simple || echo "Issues found - check output above"
+    jf audit --format=table || echo "Issues found - check output above"
     echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 ```
 
@@ -52,7 +97,7 @@ FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/s
     jf docker scan $IMAGE_TAG
 ```
 
-## Step 4: Enable Frogbot for Pull Requests
+## Step 5: Enable Frogbot for Pull Requests
 
 Add this job to your workflow:
 
@@ -61,6 +106,7 @@ frogbot:
   runs-on: ubuntu-latest
   if: github.event_name == 'pull_request' || github.event_name == 'push'
   permissions:
+    id-token: write
     contents: read
     pull-requests: write
     security-events: write
@@ -69,12 +115,13 @@ frogbot:
   - uses: jfrog/frogbot@v2
     env:
       JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-      JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
       JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
+      JF_OIDC_PROVIDER_NAME: gc-secure-artifacts
+      JF_OIDC_AUDIENCE: https://github.com/gccloudone
 ```
 
-## Step 5: Add Cost Management
+## Step 6: Add Cost Management
 
 Include automated cleanup analysis:
 
@@ -83,13 +130,17 @@ cleanup:
   runs-on: ubuntu-latest
   if: github.event_name == 'push'
   needs: [build-and-scan]
+  permissions:
+    id-token: write
+    contents: read
   steps:
-  - name: Setup JFrog CLI
+  - name: Setup JFrog CLI with OIDC
     uses: jfrog/setup-jfrog-cli@v4
     env:
       JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-      JF_USER: ${{ secrets.JFROG_USERNAME }}
-      JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+    with:
+      oidc-provider-name: github-oidc
+
   - name: Cleanup Analysis
     run: |
       echo "Running automated cleanup to save storage costs..."
@@ -97,13 +148,15 @@ cleanup:
       echo "Found $CLEANUP_COUNT old images that could be cleaned up"
 ```
 
-## Step 6: Push to JFrog Registry
+## Step 7: Push to JFrog Registry
 
 ```yaml
-- name: Docker login
-  run: |
-    echo "${{ secrets.JFROG_JWT_TOKEN }}" | docker login artifacts-artefacts.devops.cloud-nuage.canada.ca \
-      --username "${{ secrets.JFROG_USERNAME }}" --password-stdin
+- name: Docker login via OIDC
+  uses: docker/login-action@v3
+  with:
+    registry: ${{ env.REGISTRY }}
+    username: ${{ steps.setup-jfrog-cli.outputs.oidc-user }}
+    password: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
 
 - name: Build and push
   run: |
@@ -149,16 +202,18 @@ jobs:
   update-digests:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
     steps:
     - uses: actions/checkout@v4
-    - name: Setup JFrog CLI
+    - name: Setup JFrog CLI with OIDC
       uses: jfrog/setup-jfrog-cli@v4
       env:
         JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
-        JF_USER: ${{ secrets.JFROG_USERNAME }}
-        JF_ACCESS_TOKEN: ${{ secrets.JFROG_JWT_TOKEN }}
+      with:
+        oidc-provider-name: github-oidc
+
     # Automatically updates Dockerfiles with latest secure digests
 ```
 
@@ -239,6 +294,7 @@ JFrog Developer Tools Used:
 - Automated Cleanup: Checked for old images to save storage costs
 - Frogbot: Automated security comments on pull requests
 - Image Scanning: JFrog Xray scanned container images
+- OIDC Authentication: Secure credential-less authentication
 ```
 
 ## Common Commands
@@ -285,6 +341,14 @@ steps:
 ```
 
 *Note: Matrix strategy is demonstrated in this repository but optional for your implementation.*
+
+## OIDC Security Benefits
+
+- **Enhanced Security**: No long-lived credentials stored in GitHub
+- **Reduced Management**: No secret rotation required
+- **Better Audit Trail**: Clear identity mapping in JFrog logs
+- **Principle of Least Privilege**: Workflow-specific permissions
+- **Compliance**: Meets modern security standards for CI/CD
 
 ## Support
 

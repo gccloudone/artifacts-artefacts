@@ -1,0 +1,72 @@
+name: Test OIDC Permissions - Debug Mode
+on:
+  push:
+    branches: [feat/jfrog-oidc]
+  workflow_dispatch:
+
+env:
+  REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
+  JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE for JFrog Support
+
+jobs:
+  test-oidc:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@v4
+        id: setup-jfrog-cli
+        env:
+          JF_URL: https://${{ env.REGISTRY }}
+          JF_PROJECT: ssc-aurora
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+          JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE too
+        with:
+          oidc-provider-name: github-oidc
+          version: 2.82.0
+
+      - name: Collect System Information
+        run: |
+          echo "=== SYSTEM INFO FOR JFROG SUPPORT CASE ==="
+          echo "Workflow Run ID: ${{ github.run_id }}"
+          echo "Date: $(date -u)"
+          echo "JFrog CLI Version: $(jf --version)"
+          echo "Authentication: OIDC"
+          echo "Project: ssc-aurora"
+          echo "========================================"
+
+      - name: Test Basic JFrog Connection
+        run: |
+          echo "Testing basic JFrog connection..."
+          jf rt ping
+
+      - name: Test Xray Entitlements
+        run: |
+          echo "Testing Xray contextual analysis entitlements..."
+          RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+            -H "Authorization: Bearer ${{ steps.setup-jfrog-cli.outputs.oidc-token }}" \
+            https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis)
+          echo "Response: $RESPONSE"
+
+      - name: Test Docker Scan (The Failing Command)
+        run: |
+          echo "Testing the failing docker scan command with DEBUG logging..."
+
+          # Skip Docker login issues - use a public image to focus on the OIDC scanning problem
+          echo "Pulling public hello-world image for testing..."
+          docker pull hello-world
+
+          echo "Running: jf docker scan with debug logging on public image..."
+          echo "This should demonstrate the OIDC permission issue..."
+          jf docker scan hello-world --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
+
+      - name: Test Simple Audit Scan
+        run: |
+          echo "Testing simple audit scan..."
+          cd examples/python-app
+          jf audit --format=table --project=ssc-aurora --fail=false || echo "Audit completed"
