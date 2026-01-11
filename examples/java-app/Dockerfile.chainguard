@@ -1,9 +1,9 @@
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21 AS builder
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk@sha256:c456f72ce2e1f7931ed55b13711af3e5221679c6800f433e4e6e0679bd376d65
 WORKDIR /app
 COPY src/main/java/com/example/*.java ./
 RUN javac *.java
 
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre@sha256:8494ac4750e1913c8c0fab4d609bca1ba7d7e0e4ee217378be1a9d451e5eba14
 WORKDIR /app
 COPY --from=builder /app/*.class ./
 EXPOSE 8080
