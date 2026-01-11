@@ -18,17 +18,32 @@ env:
   IMAGE_NAME: ssc-aurora-docker-local/python-app
 
 jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfiles: ${{ steps.set-matrix.outputs.dockerfiles }}
+    steps:
+      - id: set-matrix
+        run: echo "dockerfiles=['chainguard','standard']" >> $GITHUB_OUTPUT
+
   build-and-scan:
     runs-on: ubuntu-latest
+    needs: setup-matrix
     permissions:
       contents: read
       security-events: write
       pull-requests: write
     strategy:
       matrix:
-        dockerfile: [standard, chainguard]
+        dockerfile: ${{ fromJSON(needs.setup-matrix.outputs.dockerfiles) }}
 
     steps:
+      - name: GBS Start Capture
+        uses: falcosecurity/falco-actions/start@f3b08d497481ce1db0f4aa39e4e48a624a424c3f
+        with:
+          mode: analyze
+          sysdig-version: "sha256:c63ec30ce5db5b0d934343028031bba32b81cb7cb3f82e82d87b72c9b1694922"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -48,7 +63,7 @@ jobs:
         run: |
           echo "Scanning dependencies for security issues..."
           cd examples/python-app
-          jf audit --format=simple || echo "Issues found - check output above"
+          jf audit --format=table || echo "Issues found - check output above"
           echo ""
           echo "Developer tip: Run 'jf audit --fix' locally to auto-fix vulnerabilities"
 
@@ -70,6 +85,29 @@ jobs:
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           echo "Scanning ${{ matrix.dockerfile }} image..."
           jf docker scan $IMAGE_TAG
+
+      - name: GBS Stop Capture
+        uses: KingBain/falco-actions/stop@latest-upload
+        with:
+          mode: analyze
+          capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
+          hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
+
+  gbs-analyze:
+    needs: [build-and-scan, setup-matrix]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile: ${{ fromJSON(needs.setup-matrix.outputs.dockerfiles) }}
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: GBS Analyze
+        uses: KingBain/falco-actions/analyze@latest-upload
+        with:
+          capture_name: capture-${{ github.run_id }}-${{ matrix.dockerfile }}
+          hashes_name: hashes-${{ github.run_id }}-${{ matrix.dockerfile }}
 
   cleanup:
     runs-on: ubuntu-latest
