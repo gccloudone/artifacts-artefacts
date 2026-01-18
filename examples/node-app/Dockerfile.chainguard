@@ -1,4 +1,4 @@
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node@sha256:9e7bbcec0e764d3f53e0028407675d8d621c9682983bb47bd511eebefcdb8e00
 WORKDIR /app
 COPY app.js .
 EXPOSE 8080
