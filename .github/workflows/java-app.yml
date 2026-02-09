@@ -79,7 +79,7 @@ jobs:
         run: |
           IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.dockerfile }}
           echo "Scanning ${{ matrix.dockerfile }} image..."
-          jf docker scan $IMAGE_TAG --project=ssc-aurora || echo "Scan completed with issues - check output above"
+          jf docker scan $IMAGE_TAG --project=ssc-aurora
 
   cleanup:
     runs-on: ubuntu-latest
