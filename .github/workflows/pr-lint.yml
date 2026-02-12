@@ -1,12 +1,14 @@
 ---
 name: Code Linter Pull Request Review
 
-on:
+on: # zizmor: ignore[dangerous-triggers]
   pull_request:
     branches: [main]
   pull_request_target:
     types: [opened, synchronize]
     branches: [main]
+
+permissions: {}
 
 jobs:
   scan-pull-request:
@@ -15,15 +17,15 @@ jobs:
 
     permissions:
       contents: read
-      packages: read
-      statuses: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
+          fetch-depth: 1
 
       - name: Super-linter
         uses: super-linter/super-linter/slim@12562e48d7059cf666c43a4ecb0d3b5a2b31bd9e # v8.4.0

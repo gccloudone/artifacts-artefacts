@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [main]
 
-permissions: read-all
+permissions: {}
 
 env:
   JF_URL: "https://artifacts-artefacts.devops.cloud-nuage.canada.ca"

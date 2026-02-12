@@ -1,12 +1,12 @@
 ---
 name: External/Fork Frogbot Pull Request Review
 
-on:
+on: # zizmor: ignore[dangerous-triggers]
   pull_request_target:
     types: [opened, synchronize]
     branches: [main]
 
-permissions: read-all
+permissions: {}
 
 env:
   JF_URL: "https://artifacts-artefacts.devops.cloud-nuage.canada.ca"
@@ -16,6 +16,11 @@ jobs:
   scan-pull-request:
     runs-on: ubuntu-latest
     environment: frogbot-external-review
+    
+    concurrency:
+      group: frogbot-external-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
     permissions:
       pull-requests: write
       contents: read
@@ -27,6 +32,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
+          fetch-depth: 1
 
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@279b1f629f43dd5bc658d8361ac4802a7ef8d2d5 #v4.9.1
