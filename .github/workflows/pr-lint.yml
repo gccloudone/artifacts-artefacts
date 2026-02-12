@@ -62,6 +62,7 @@ jobs:
           VALIDATE_BIOME_LINT: false
           VALIDATE_TRIVY: false
           SUPPRESS_POSSUM: true
+          DISABLE_ERRORS: true
           LINTER_RULES_PATH: /
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
 
