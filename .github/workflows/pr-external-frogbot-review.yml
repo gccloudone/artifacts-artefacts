@@ -23,13 +23,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Setup JFrog CLI with OIDC
-        uses: jfrog/setup-jfrog-cli@v4
+        uses: jfrog/setup-jfrog-cli@279b1f629f43dd5bc658d8361ac4802a7ef8d2d5 #v4.9.1
         id: setup-jfrog-cli
         env:
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
@@ -38,7 +38,7 @@ jobs:
           version: 2.91.0
 
       - name: Run Frogbot
-        uses: jfrog/frogbot@v2
+        uses: jfrog/frogbot@f33c6d196969c81ff143ec54254563f0f8258b8c #v2.29.4
         env:
           JF_ACCESS_TOKEN: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
