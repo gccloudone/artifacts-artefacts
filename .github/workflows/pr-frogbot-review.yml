@@ -2,7 +2,8 @@
 name: Frogbot Pull Request Review
 
 on:
-  pull_request: {}
+  pull_request: 
+    branches: [ main ]
 
 permissions: read-all
 

@@ -4,7 +4,8 @@ name: External/Fork Frogbot Pull Request Review
 on:
   pull_request_target:
     types: [ opened, synchronize ]
-
+    branches: [ main ]
+    
 permissions: read-all
 
 env:
