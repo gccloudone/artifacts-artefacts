@@ -1,3 +1,4 @@
+---
 name: Frogbot Pull Request Review
 
 on:
@@ -37,13 +38,8 @@ jobs:
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
-          JF_ACCESS_TOKEN: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JF_GIT_USE_GITHUB_ENVIRONMENT: "false"
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
-          JF_ENABLE_SAST: "true"
-          JF_ENABLE_SECRETS: "true"
-          JF_ENABLE_IAC: "false"
           JF_FAIL: "true"
 
 
