@@ -1,8 +1,9 @@
 ---
-name: Frogbot Pull Request Review
+name: External/Fork Frogbot Pull Request Review
 
 on:
-  pull_request: {}
+  pull_request_target:
+    types: [ opened, synchronize ]
 
 permissions: read-all
 
@@ -13,17 +14,17 @@ env:
 jobs:
   scan-pull-request:
     runs-on: ubuntu-latest
+    environment: frogbot-external-review
     permissions:
-      id-token: write
-      contents: read
       pull-requests: write
-      security-events: write
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: "${{ github.event.pull_request.head.sha }}"
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
@@ -37,8 +38,8 @@ jobs:
       - name: Run Frogbot
         uses: jfrog/frogbot@v2
         env:
-          JF_ACCESS_TOKEN: "${{ steps.setup-jfrog-cli.outputs.oidc-token }}"
-          JF_GIT_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          JF_ACCESS_TOKEN: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
           JF_FAIL: "true"
 
