@@ -3,8 +3,8 @@ name: External/Fork Frogbot Pull Request Review
 
 on:
   pull_request_target:
-    types: [ opened, synchronize ]
-    branches: [ main ]
+    types: [opened, synchronize]
+    branches: [main]
 
 permissions: read-all
 
@@ -44,5 +44,3 @@ jobs:
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
           JF_FAIL: "true"
-
-

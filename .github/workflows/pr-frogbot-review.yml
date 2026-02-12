@@ -2,8 +2,8 @@
 name: Frogbot Pull Request Review
 
 on:
-  pull_request: 
-    branches: [ main ]
+  pull_request:
+    branches: [main]
 
 permissions: read-all
 
@@ -42,5 +42,3 @@ jobs:
           JF_GIT_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           JF_INCLUDE_ALL_VULNERABILITIES: "true"
           JF_FAIL: "true"
-
-
