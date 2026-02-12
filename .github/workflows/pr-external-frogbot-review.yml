@@ -16,7 +16,7 @@ jobs:
   scan-pull-request:
     runs-on: ubuntu-latest
     environment: frogbot-external-review
-    
+
     concurrency:
       group: frogbot-external-${{ github.event.pull_request.number }}
       cancel-in-progress: true
