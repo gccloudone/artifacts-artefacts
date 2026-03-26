@@ -37,6 +37,10 @@ Using the internal registry offers quicker and more reliable access. If the imag
 
 Departments can also request to have designated users being B2B federated with DND's enterprise tenant and then could gain direct access to the Chainguard Portal and set up their own pull based tokens. While this enables teams to explore the full image catalogue and manage access to container images directly, the preferred and most efficient method remains pulling images through GC Secure Artifacts.
 
+To request this or for any other questions kindly send an email to:
+
+* devops.artifacts-artefacts.devops@ssc-spc.gc.ca
+
 #### Login Process to Chainguard Portal
 
 The login process for users who wish to get direct access to the Chainguard Portal is as follows.
@@ -77,6 +81,8 @@ We would love to hear your feedback and any questions you may have:
 
 The following hardened container images have already been procured for the entire Government of Canada:
 
+* https://images.chainguard.dev/
+
 | **Image Name**                         | FIPS | **Renewal Date** | **Department** | **Notes**                         |
 |----------------------------------------|------|------------------|----------------|-----------------------------------|
 | python                                 | Y    | 2027-03-01       | SSC            |                                   |
@@ -89,7 +95,7 @@ The following hardened container images have already been procured for the entir
 | jdk+jre                                | Y    | 2027-03-01       | DND            |                                   |
 | alertmanager                           | N    | 2027-03-01       | DND            |                                   |
 | argocd-application-controller          | Y    | 2027-03-01       | DND            |                                   |
-| argocd.                                | Y    | 2027-03-01       | DND            |                                   |
+| argocd                                 | Y    | 2027-03-01       | DND            |                                   |
 | argocd-repo-server                     | Y    | 2027-03-01       | DND            |                                   |
 | argocd-server                          | Y    | 2027-03-01       | DND            |                                   |
 | aws-cli                                | Y    | 2027-03-01       | DND            |                                   |
