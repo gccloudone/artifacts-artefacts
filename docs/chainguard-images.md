@@ -1,10 +1,10 @@
 # Chainguard Hardened Container Images
 
-**Purpose:** This page provides guidance for departments on securely consuming Chainguard-hardened container images through Shared Services Canada (SSC).
+**Purpose:** This page provides guidance for departments on securely consuming Chainguard-hardened container images through Shared Services Canada (DND).
 
 Chainguard offers a broad catalogue of minimal, hardened container base images with a strong emphasis on security. Regularly updated, these images come with integrated SBOMs (Software Bill of Materials) and are maintained to ensure they contain no known security vulnerabilities at the moment of release.
 
-SSC has enabled secure, internal access to these images for departments across the Government of Canada (GC), supporting a more resilient software supply chain.
+DND has enabled secure, internal access to these images for departments across the Government of Canada (GC), supporting a more resilient software supply chain.
 
 ## Background
 
@@ -27,15 +27,15 @@ To pull Chainguard-procured images:
 docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
 
 # Pull Python
-docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
+docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/DND-spc.gc.ca/python:3.13.3
 
 # Pull Node.js
-docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:23.11.0-slim
+docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/DND-spc.gc.ca/node:23.11.0-slim
 ```
 
 Using the internal registry offers quicker and more reliable access. If the image has been previously pulled, it is served directly from Artifactory’s cache. Furthermore, all downloads are automatically logged and scanned by **JFrog XRay** for vulnerabilities.
 
-Departments can also request to have designated users being B2B federated with SSC's enterprise tenant and then could gain direct access to the Chainguard Portal and set up their own pull based tokens. While this enables teams to explore the full image catalogue and manage access to container images directly, the preferred and most efficient method remains pulling images through GC Secure Artifacts.
+Departments can also request to have designated users being B2B federated with DND's enterprise tenant and then could gain direct access to the Chainguard Portal and set up their own pull based tokens. While this enables teams to explore the full image catalogue and manage access to container images directly, the preferred and most efficient method remains pulling images through GC Secure Artifacts.
 
 #### Login Process to Chainguard Portal
 
@@ -44,7 +44,7 @@ The login process for users who wish to get direct access to the Chainguard Port
 - User goes to https://console.chainguard.dev/auth/login
 - Then they click "Use Your Identity Provider"
 - Then they click "Use Organization Name"
-- Then they type "ssc-spc.gc.ca"
+- Then they type "DND-spc.gc.ca"
 - Then they click "Login with Provider"
 - Then they get redirected to Entra ID
 
@@ -52,9 +52,9 @@ At which point once the user accounts are seen in the portal we usually elevate 
 
 ## Procurement
 
-Chainguard has provided **Shared Services Canada (SSC)** with a list of all departments currently signed up to consume their container images.
+Chainguard has provided **Shared Services Canada (DND)** with a list of all departments currently signed up to consume their container images.
 
-To streamline procurement and maximize value across GC, we are actively working towards a "pooled" approach. In this model, SSC will act as the central repository, enabling all participating departments with container image needs to access and share resources. This collaborative strategy promotes efficiency while allowing licensing costs to decrease as the total quantity of images purchased increases, resulting in cost savings over time.
+To streamline procurement and maximize value across GC, we are actively working towards a "pooled" approach. In this model, DND will act as the central repository, enabling all participating departments with container image needs to access and share resources. This collaborative strategy promotes efficiency while allowing licensing costs to decrease as the total quantity of images purchased increases, resulting in cost savings over time.
 
 Chainguard licensing is based on a per-image model, which includes access to all supported versions of each image. To view the complete directory of over 1,750 hardened container images, including supported versions, SBOMs, comparisons to upstream CVEs, and other critical details.
 
@@ -62,7 +62,7 @@ Chainguard licensing is based on a per-image model, which includes access to all
 
 ### Next Steps and Your Input
 
-SSC is still evaluating how Chainguard procurement could work going forward and would appreciate everyone's input on our proposed model. Your feedback will be shared with Senior Management and directly contribute to shaping the final offering.
+DND is still evaluating how Chainguard procurement could work going forward and would appreciate everyone's input on our proposed model. Your feedback will be shared with Senior Management and directly contribute to shaping the final offering.
 
 To assist in understanding our plans and facilitate discussions, we have attached two decks:
 
@@ -71,20 +71,69 @@ To assist in understanding our plans and facilitate discussions, we have attache
 
 We would love to hear your feedback and any questions you may have:
 
-- [devops.artifacts-artefacts.devops@ssc-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca)
+- [devops.artifacts-artefacts.devops@DND-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@DND-spc.gc.ca)
 
 ### Procured Chainguard Images
 
-The following hardened container images have already been procured:
+The following hardened container images have already been procured for the entire Government of Canada:
 
-| **Image Name**       | **Renewal Date** | **Department** | **Notes**                         |
-|----------------------|------------------|----------------|-----------------------------------|
-| Python               | 2026-03-01       | SSC            | For Python-based applications     |
-| ASP.NET Runtime      | 2026-03-01       | SSC            | For .NET ASP.NET-based frameworks |
-| .NET Runtime         | 2026-03-01       | SSC            | General-purpose .NET runtime      |
-| .NET SDK             | 2026-03-01       | SSC            | For .NET software development     |
-| PowerShell           | 2026-03-01       | SSC            | For PowerShell scripting          |
-| OpenJDK (JDK & JRE)  | 2026-03-01       | SSC            | Java runtime and development kit  |
+| **Image Name**                         | FIPS | **Renewal Date** | **Department** | **Notes**                         |
+|----------------------------------------|------|------------------|----------------|-----------------------------------|
+| python                                 | Y    | 2026-03-01       | SSC            |                                   |
+| node                                   | Y    | 2026-03-01       | SSC            |                                   |
+| powerShell                             | Y    | 2026-03-01       | SSC            |                                   |
+| .net                                   | Y    | 2026-03-01       | DND            |                                   |
+| go                                     | Y    | 2026-03-01       | DND            |                                   |
+| php                                    | Y    | 2026-03-01       | DND            |                                   |
+| rust                                   | N    | 2026-03-01       | DND            |                                   |
+| jdk+jre                                | Y    | 2026-03-01       | DND            |                                   |
+| alertmanager                           | N    | 2026-03-01       | DND            |                                   |
+| argocd-application-controller          | Y    | 2026-03-01       | DND            |                                   |
+| argocd.                                | Y    | 2026-03-01       | DND            |                                   |
+| argocd-repo-server                     | Y    | 2026-03-01       | DND            |                                   |
+| argocd-server                          | Y    | 2026-03-01       | DND            |                                   |
+| aws-cli                                | Y    | 2026-03-01       | DND            |                                   |
+| az                                     | Y    | 2026-03-01       | DND            |                                   |
+| cert-manager-acmesolver                | N    | 2026-03-01       | DND            |                                   |
+| cert-manager-cainjector                | N    | 2026-03-01       | DND            |                                   |
+| cert-manager-controller                | N    | 2026-03-01       | DND            |                                   |
+| cert-manager-webhook                   | N    | 2026-03-01       | DND            |                                   |
+| cloudwatch-agent                       | Y    | 2026-03-01       | DND            |                                   |
+| coredns                                | Y    | 2026-03-01       | DND            |                                   |
+| cosign                                 | Y    | 2026-03-01       | DND            |                                   |
+| dex                                    | Y    | 2026-03-01       | DND            |                                   |
+| falco                                  | Y    | 2026-03-01       | DND            |                                   |
+| geoserver                              | N    | 2026-03-01       | DND            |                                   |
+| glibc                                  | Y    | 2026-03-01       | DND            |                                   |
+| grafana                                | N    | 2026-03-01       | DND            |                                   |
+| headlamp                               | N    | 2026-03-01       | DND            |                                   |
+| helm                                   | N    | 2026-03-01       | DND            |                                   |
+| istio-base                             | Y    | 2026-03-01       | DND            |                                   |
+| istio-install-cni                      | Y    | 2026-03-01       | DND            |                                   |
+| istio-pilot                            | Y    | 2026-03-01       | DND            |                                   |
+| istio-proxy                            | Y    | 2026-03-01       | DND            |                                   |
+| ingress-nginx                          | Y    | 2026-03-01       | DND            |                                   |
+| nginx                                  | Y    | 2026-03-01       | DND            |                                   |
+| owasp-zap                              | N    | 2026-03-01       | DND            |                                   |
+| postgis                                | Y    | 2026-03-01       | DND            |                                   |
+| postgres                               | Y    | 2026-03-01       | DND            |                                   |
+| powershell                             | N    | 2026-03-01       | DND            |                                   |
+| prometheus                             | Y    | 2026-03-01       | DND            |                                   |
+| rancher                                | N    | 2026-03-01       | DND            |                                   |
+| step-ca                                | N    | 2026-03-01       | DND            |                                   |
+| step-cli                               | N    | 2026-03-01       | DND            |                                   |
+| step-issuer                            | N    | 2026-03-01       | DND            |                                   |
+| terraform                              | N    | 2026-03-01       | DND            |                                   |
+| traefik                                | N    | 2026-03-01       | DND            |                                   |
+| trivy                                  | N    | 2026-03-01       | DND            |                                   |
+| trivy-operator                         | N    | 2026-03-01       | DND            |                                   |
+| trufflehog                             | N    | 2026-03-01       | DND            |                                   |
+| velero                                 | Y    | 2026-03-01       | DND            |                                   |
+| velero-plugin-for-aws                  | Y    | 2026-03-01       | DND            |                                   |
+| velero-plugin-for-microsoft-azure      | Y    | 2026-03-01       | DND            |                                   |
+| velero-plugin-for-microsoft-azure      | Y    | 2026-03-01       | DND            |                                   |
+
+> Special thanks to DND for helping to secure the entire Government of Canada supply chain!!!
 
 ### Potential Chainguard Images
 
@@ -131,8 +180,8 @@ The following hardened container images are under active consideration:
 | Nginx Ingress Controller          | TBD              | Service Canada | Application | Manages routing traffic in Kubernetes          |
 | Cert Manager                      | TBD              | Service Canada | Application | Automates creation/renewal of TLS certificates |
 | Valkey                            | TBD              | Service Canada | Application | Manages secure key and certificate storage     |
-| falco-no-driver                   | TBD              | SSC            | Application | Monitor and Capture Linux Kernel Events        |
-| sysdig                            | TBD              | SSC            | Application | Monitor and Capture Container Events           |
+| falco-no-driver                   | TBD              | DND            | Application | Monitor and Capture Linux Kernel Events        |
+| sysdig                            | TBD              | DND            | Application | Monitor and Capture Container Events           |
 | apache-nifi                       | TBD              | PSC            | Application |                                                |
 | apache-nifi-registry              | TBD              | PSC            | Application |                                                |
 | python-fips                       | TBD              | PSC            | Application |                                                |
