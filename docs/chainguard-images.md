@@ -27,10 +27,10 @@ To pull Chainguard-procured images:
 docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
 
 # Pull Python
-docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/DND-spc.gc.ca/python:3.13.3
+docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
 
 # Pull Node.js
-docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/DND-spc.gc.ca/node:23.11.0-slim
+docker pull artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:23.11.0-slim
 ```
 
 Using the internal registry offers quicker and more reliable access. If the image has been previously pulled, it is served directly from Artifactory’s cache. Furthermore, all downloads are automatically logged and scanned by **JFrog XRay** for vulnerabilities.
@@ -48,7 +48,7 @@ The login process for users who wish to get direct access to the Chainguard Port
 - User goes to https://console.chainguard.dev/auth/login
 - Then they click "Use Your Identity Provider"
 - Then they click "Use Organization Name"
-- Then they type "DND-spc.gc.ca"
+- Then they type "ssc-spc.gc.ca"
 - Then they click "Login with Provider"
 - Then they get redirected to Entra ID
 
@@ -75,7 +75,7 @@ To assist in understanding our plans and facilitate discussions, we have attache
 
 We would love to hear your feedback and any questions you may have:
 
-- [devops.artifacts-artefacts.devops@DND-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@DND-spc.gc.ca)
+- [devops.artifacts-artefacts.devops@ssc-spc.gc.ca](mailto:devops.artifacts-artefacts.devops@ssc-spc.gc.ca)
 
 ### Procured Chainguard Images
 
