@@ -1,0 +1,52 @@
+---
+name: External/Fork Frogbot Pull Request Review
+
+on: # zizmor: ignore[dangerous-triggers]
+  pull_request_target:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions: {}
+
+env:
+  JF_URL: "https://artifacts-artefacts.devops.cloud-nuage.canada.ca"
+  JF_PROJECT: "ssc-aurora"
+
+jobs:
+  scan-pull-request:
+    runs-on: ubuntu-latest
+    environment: frogbot-external-review
+
+    concurrency:
+      group: frogbot-external-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    permissions:
+      pull-requests: write
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@279b1f629f43dd5bc658d8361ac4802a7ef8d2d5 #v4.9.1
+        id: setup-jfrog-cli
+        env:
+          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
+        with:
+          oidc-provider-name: github-oidc
+          version: 2.91.0
+
+      - name: Run Frogbot
+        uses: jfrog/frogbot@f33c6d196969c81ff143ec54254563f0f8258b8c #v2.29.4
+        env:
+          JF_ACCESS_TOKEN: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JF_INCLUDE_ALL_VULNERABILITIES: "true"
+          JF_FAIL: "true"

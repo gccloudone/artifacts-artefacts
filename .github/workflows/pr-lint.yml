@@ -1,0 +1,111 @@
+---
+name: Code Linter Pull Request Review
+
+on: # zizmor: ignore[dangerous-triggers]
+  pull_request:
+    branches: [main]
+  pull_request_target:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  scan-pull-request:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Find existing summary comment
+        uses: actions-cool/issues-helper@71b62d7da76e59ff7b193904feb6e77d4dbb2777 #v3.7.6
+        id: find_comment
+        with:
+          actions: find-comments
+          show-thanks: "false"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-auth: "github-actions[bot]"
+          body-includes: "<!-- super-linter-summary-identifier -->"
+
+      - name: Update summary comment
+        if: steps.find_comment.outputs.comments != ''
+        uses: actions-cool/issues-helper@71b62d7da76e59ff7b193904feb6e77d4dbb2777 #v3.7.6
+        with:
+          actions: update-comment
+          show-thanks: "false"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ fromJSON(steps.find_comment.outputs.comments)[0].id }}
+          update-mode: replace
+          body: |
+            <!-- super-linter-summary-identifier -->
+            # Super-linter summary
+            Please wait while scan is updating...
+
+      - name: Super-linter
+        uses: super-linter/super-linter/slim@12562e48d7059cf666c43a4ecb0d3b5a2b31bd9e # v8.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_CHECKOV: false
+          VALIDATE_JSCPD: false
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_TRIVY: false
+          SUPPRESS_POSSUM: true
+          DISABLE_ERRORS: true
+          LINTER_RULES_PATH: /
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
+
+      - name: Read Summary File
+        id: read_summary
+        run: |
+          SUMMARY_FILE="super-linter-output/super-linter-summary.md"
+
+          if [ -f "$SUMMARY_FILE" ]; then
+            # Set a flag indicating the file exists
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+
+            # Use a block to redirect everything to GITHUB_OUTPUT at once
+            {
+              echo "content<<EOF"
+              cat "$SUMMARY_FILE"
+              echo ""
+              echo "---"
+              echo "### [View Full Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No summary file found."
+          fi
+
+      - name: Delete existing summery comment
+        if: steps.find_comment.outputs.comments != ''
+        uses: actions-cool/issues-helper@71b62d7da76e59ff7b193904feb6e77d4dbb2777 #v3.7.6
+        with:
+          actions: delete-comment
+          show-thanks: "false"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ fromJSON(steps.find_comment.outputs.comments)[0].id }}
+
+      - name: Create summary comment
+        if: steps.read_summary.outputs.exists == 'true'
+        uses: actions-cool/issues-helper@71b62d7da76e59ff7b193904feb6e77d4dbb2777 #v3.7.6
+        with:
+          actions: create-comment
+          show-thanks: "false"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            <!-- super-linter-summary-identifier -->
+            ${{ steps.read_summary.outputs.content }}
