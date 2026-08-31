@@ -18,14 +18,16 @@ jobs:
 
       - name: Setup JFrog CLI with OIDC
         uses: jfrog/setup-jfrog-cli@v4
+        id: setup-jfrog-cli
         env:
           JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
+          JF_PROJECT: ssc-aurora
         with:
           oidc-provider-name: github-oidc
           version: 2.91.0
 
       - name: Docker login via OIDC
-        run: jf docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
+        run: jf docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
 
       - name: Get latest digests
         run: |
@@ -47,10 +49,12 @@ jobs:
 
       - name: Update Dockerfiles
         run: |
-          sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk:openjdk-21.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jdk@$JDK_DIGEST|g" examples/java-app/Dockerfile.chainguard
-          sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre:openjdk-21.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/jre@$JRE_DIGEST|g" examples/java-app/Dockerfile.chainguard
-          sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python@$PYTHON_DIGEST|g" examples/python-app/Dockerfile.chainguard
-          sed -i "s|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node:24.1.0.*|FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/node@$NODE_DIGEST|g" examples/node-app/Dockerfile.chainguard
+          # Match either a tag (:openjdk-21) or an existing digest (@sha256:...) so re-runs stay idempotent.
+          # The trailing "[^[:space:]]*" stops at the first space, preserving suffixes like " AS builder".
+          sed -i -E "s|(docker-chainguard-remote/ssc-spc.gc.ca/jdk)[:@][^[:space:]]*|\1@$JDK_DIGEST|g" examples/java-app/Dockerfile.chainguard
+          sed -i -E "s|(docker-chainguard-remote/ssc-spc.gc.ca/jre)[:@][^[:space:]]*|\1@$JRE_DIGEST|g" examples/java-app/Dockerfile.chainguard
+          sed -i -E "s|(docker-chainguard-remote/ssc-spc.gc.ca/python)[:@][^[:space:]]*|\1@$PYTHON_DIGEST|g" examples/python-app/Dockerfile.chainguard
+          sed -i -E "s|(docker-chainguard-remote/ssc-spc.gc.ca/node)[:@][^[:space:]]*|\1@$NODE_DIGEST|g" examples/node-app/Dockerfile.chainguard
 
       - name: Check for changes
         id: changes
