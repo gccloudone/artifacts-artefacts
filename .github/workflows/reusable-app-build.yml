@@ -144,7 +144,10 @@ jobs:
           version: 2.91.0
 
       - name: Run Frogbot
-        uses: jfrog/frogbot@v3
+        # Pinned to v2: v3 requires the platform-side XSC "config profile"
+        # endpoint, which returns 403 on this instance. v2 uses env vars +
+        # the local .frogbot-config.yml instead.
+        uses: jfrog/frogbot@v2.35.2
         env:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
