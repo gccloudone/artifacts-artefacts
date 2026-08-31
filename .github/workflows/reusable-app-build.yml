@@ -115,49 +115,12 @@ jobs:
           echo "Cleanup saves storage costs and improves performance"
           echo "Run 'jf rt delete \"repo/*\" --older-than=30d' to clean manually"
 
-  frogbot:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
-    # Frogbot's scan-pull-request command refuses to run unless the job is
-    # attached to a GitHub Environment named "frogbot". Add reviewers to this
-    # environment in Settings > Environments to gate scans on untrusted PRs.
-    environment: frogbot
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-      security-events: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup JFrog CLI with OIDC
-        uses: jfrog/setup-jfrog-cli@v4
-        id: setup-jfrog-cli
-        env:
-          JF_URL: https://${{ env.REGISTRY }}
-          JF_PROJECT: ssc-aurora
-          JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
-        with:
-          oidc-provider-name: github-oidc
-          version: 2.91.0
-
-      - name: Run Frogbot
-        # Pinned to v2: v3 requires the platform-side XSC "config profile"
-        # endpoint, which returns 403 on this instance. v2 uses env vars +
-        # the local .frogbot-config.yml instead.
-        uses: jfrog/frogbot@v2.35.2
-        env:
-          JF_URL: https://${{ env.REGISTRY }}
-          JF_PROJECT: ssc-aurora
-          JF_ACCESS_TOKEN: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JF_INCLUDE_ALL_VULNERABILITIES: "true"
-          JF_ENABLE_SAST: "false"
-          JF_ENABLE_SECRETS: "false"
-          JF_ENABLE_IAC: "false"
-          JF_FAIL: "false"
+  # Frogbot lives in dedicated workflows (frogbot-scan-pull-request.yml and
+  # frogbot-scan-repository.yml), NOT here. Frogbot verifies that the workflow
+  # file at GITHUB_WORKFLOW_REF declares 'environment: frogbot' -- but for a
+  # reusable workflow that ref is the app caller (java-app.yml, etc.), and a
+  # caller job that uses a reusable workflow cannot set 'environment'. So the
+  # check can only pass from a standalone workflow file.
 
   summary:
     needs: [build-and-scan, cleanup]
