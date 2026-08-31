@@ -1,4 +1,5 @@
-name: Test OIDC Permissions - Debug Mode
+name: Test OIDC Permissions
+
 on:
   push:
     branches: [feat/jfrog-oidc]
@@ -6,7 +7,7 @@ on:
 
 env:
   REGISTRY: artifacts-artefacts.devops.cloud-nuage.canada.ca
-  JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE for JFrog Support
+  JFROG_CLI_LOG_LEVEL: DEBUG
 
 jobs:
   test-oidc:
@@ -25,7 +26,7 @@ jobs:
           JF_URL: https://${{ env.REGISTRY }}
           JF_PROJECT: ssc-aurora
           JFROG_CLI_AVOID_NEW_VERSION_WARNING: "true"
-          JFROG_CLI_LOG_LEVEL: DEBUG # ADD THIS LINE too
+          JFROG_CLI_LOG_LEVEL: DEBUG
         with:
           oidc-provider-name: github-oidc
           version: 2.91.0
@@ -48,25 +49,30 @@ jobs:
       - name: Test Xray Entitlements
         run: |
           echo "Testing Xray contextual analysis entitlements..."
-          RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
-            -H "Authorization: Bearer ${{ steps.setup-jfrog-cli.outputs.oidc-token }}" \
-            https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis)
-          echo "Response: $RESPONSE"
+          # Uses the authenticated CLI and includes the project scope (fixes the 403)
+          jf xr curl -XGET \
+            "/api/v1/entitlements/feature/contextual_analysis?projectKey=ssc-aurora"
 
-      - name: Test Docker Scan (The Failing Command)
+      # Equivalent raw curl version, kept for reference. To use it:
+      #   1. Uncomment the block below.
+      #   2. The key fix vs. the original is appending ?projectKey=ssc-aurora
+      #      (without the project scope this endpoint returns 403; with it, 200).
+      # - name: Test Xray Entitlements (raw curl - reference only)
+      #   run: |
+      #     echo "Testing Xray contextual analysis entitlements via curl..."
+      #     RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+      #       -H "Authorization: Bearer ${{ steps.setup-jfrog-cli.outputs.oidc-token }}" \
+      #       "https://${{ env.REGISTRY }}/xray/api/v1/entitlements/feature/contextual_analysis?projectKey=ssc-aurora")
+      #     echo "Response: $RESPONSE"
+
+      - name: Test Docker Scan
         run: |
-          echo "Testing the failing docker scan command with DEBUG logging..."
-
-          # Skip Docker login issues - use a public image to focus on the OIDC scanning problem
-          echo "Pulling public hello-world image for testing..."
+          echo "Testing docker scan on a public image..."
           docker pull hello-world
-
-          echo "Running: jf docker scan with debug logging on public image..."
-          echo "This should demonstrate the OIDC permission issue..."
-          jf docker scan hello-world --project=ssc-aurora --fail=false || echo "Expected failure for JFrog Support analysis"
+          jf docker scan hello-world --project=ssc-aurora --fail=false
 
       - name: Test Simple Audit Scan
         run: |
           echo "Testing simple audit scan..."
           cd examples/python-app
-          jf audit --format=table --project=ssc-aurora --fail=false || echo "Audit completed"
+          jf audit --format=table --project=ssc-aurora --fail=false
