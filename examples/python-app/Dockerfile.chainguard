@@ -1,4 +1,4 @@
-FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python:3.13.3
+FROM artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-chainguard-remote/ssc-spc.gc.ca/python@sha256:c76fa83ff2f9b961c140b3b5e0f25a81c3711263c2bdb6c063abab87048a659a
 WORKDIR /app
 COPY app.py .
 EXPOSE 8080
